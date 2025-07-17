@@ -1,31 +1,52 @@
-const axios = require('axios');
+import axios from 'axios';
 
-const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
-const ISRC_GOLDEN = 'QZ8BZ2513510';
-const ISRC_YOUR_IDOL = 'QZ8BZ2513512';
+const clientId = process.env.SPOTIFY_CLIENT_ID;
+const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+const GOLDEN_TRACK_ID = '1CPZ5BxNNd0n0nF4Orb9JS';
+const IDOL_TRACK_ID = '1I37Zz2g3hk9eWxaNkj031';
+
+let cachedToken = null;
+let tokenExpiry = 0;
+
+async function getAccessToken() {
+  if (cachedToken && Date.now() < tokenExpiry) {
+    return cachedToken;
+  }
+  const resp = await axios({
+    method: 'post',
+    url: 'https://accounts.spotify.com/api/token',
+    headers: {
+      Authorization: 'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64'),
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    data: new URLSearchParams({ grant_type: 'client_credentials' }).toString()
+  });
+  cachedToken = resp.data.access_token;
+  tokenExpiry = Date.now() + resp.data.expires_in * 1000;
+  return cachedToken;
+}
 
 export default async function handler(req, res) {
-  const headers = {
-    'X-RapidAPI-Key': RAPIDAPI_KEY,
-    'X-RapidAPI-Host': 'spotify-track-streams-playback-count1.p.rapidapi.com',
-  };
-
   try {
+    const token = await getAccessToken();
+    const headers = { Authorization: `Bearer ${token}` };
+
     const [goldenRes, idolRes] = await Promise.all([
-      axios.get(`https://spotify-track-streams-playback-count1.p.rapidapi.com/streams/isrc/${ISRC_GOLDEN}`, { headers }),
-      axios.get(`https://spotify-track-streams-playback-count1.p.rapidapi.com/streams/isrc/${ISRC_YOUR_IDOL}`, { headers }),
+      axios.get(`https://api.spotify.com/v1/tracks/${GOLDEN_TRACK_ID}`, { headers }),
+      axios.get(`https://api.spotify.com/v1/tracks/${IDOL_TRACK_ID}`, { headers })
     ]);
 
-    const goldenStreams = goldenRes.data?.data?.streamCount || 0;
-    const idolStreams = idolRes.data?.data?.streamCount || 0;
+    const golden = goldenRes.data.popularity || 0;
+    const idol = idolRes.data.popularity || 0;
 
     res.status(200).json({
-      goldenStreams,
-      idolStreams,
-      trending: idolStreams > goldenStreams ? 'your idol' : 'golden'
+      golden,
+      idol,
+      trending: idol > golden ? 'your idol' : 'golden'
     });
-  } catch (error) {
-    console.error('API error:', error?.response?.data || error.message);
-    res.status(500).json({ error: 'Failed to fetch stream data' });
+  } catch (err) {
+    console.error('Spotify API error:', err.response?.data || err.message);
+    res.status(500).json({ error: 'Failed to fetch Spotify data' });
   }
 }
+
