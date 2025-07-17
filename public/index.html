@@ -1,9 +1,20 @@
-<div class="honmoon-container">
-  <div class="honmoon" id="honmoon"></div>
-  <div class="status-text" id="honmoon-status">Honmoon Status: Loading...</div>
-  <div class="counts">
-    <p><span class="label">Golden:</span> <span id="golden-count">0</span></p>
-    <p><span class="label">Your Idol:</span> <span id="idol-count">0</span></p>
-  </div>
-<link rel="stylesheet" href="style.css" />
-<script src="index.js" defer></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Honmoon Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Honmoon Tracker</h1>
+  <p>Status: <span id="status">Loading...</span></p>
+
+  <div id="honmoon" class="honmoon strong"></div>
+
+  <p>Golden Streams: <span id="goldenCount">0</span></p>
+  <p>Your Idol Streams: <span id="idolCount">0</span></p>
+
+  <script src="index.js" defer></script>
+</body>
+</html>
