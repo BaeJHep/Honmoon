@@ -7,10 +7,10 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 
-// Serve frontend files from /public
+// Serve frontend files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// API route
+// Mock stream data API
 app.get('/api/streams', (req, res) => {
   const golden = Math.floor(Math.random() * 100000);
   const idol = Math.floor(Math.random() * 100000);
@@ -21,7 +21,7 @@ app.get('/api/streams', (req, res) => {
   });
 });
 
-// Serve index.html for all other routes (for frontend refresh)
+// Serve frontend HTML for any other route
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'));
 });
