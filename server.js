@@ -1,13 +1,16 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path'); // <-- ADD THIS
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'public'))); // <-- SERVE STATIC FILES
 
+// Serve frontend files from /public
+app.use(express.static(path.join(__dirname, 'public')));
+
+// API route
 app.get('/api/streams', (req, res) => {
   const golden = Math.floor(Math.random() * 100000);
   const idol = Math.floor(Math.random() * 100000);
@@ -18,7 +21,7 @@ app.get('/api/streams', (req, res) => {
   });
 });
 
-// Default route to serve index.html
+// Serve index.html for all other routes (for frontend refresh)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'));
 });
