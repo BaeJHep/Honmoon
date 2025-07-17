@@ -1,16 +1,30 @@
-const golden = 645;
-const idol = 795;
+function updateTracker() {
+  fetch('/api/streams')
+    .then(res => res.json())
+    .then(data => {
+      const honmoon = document.getElementById('honmoon');
+      const status = document.getElementById('status');
+      const golden = document.getElementById('goldenCount');
+      const idol = document.getElementById('idolCount');
 
-document.getElementById('golden-count').textContent = golden;
-document.getElementById('idol-count').textContent = idol;
+      if (data.trending === 'your idol') {
+        honmoon.classList.remove('strong');
+        honmoon.classList.add('weak');
+        status.textContent = 'WEAK';
+      } else {
+        honmoon.classList.remove('weak');
+        honmoon.classList.add('strong');
+        status.textContent = 'STRONG';
+      }
 
-const honmoon = document.getElementById('honmoon');
-const status = document.getElementById('honmoon-status');
-
-if (golden > idol) {
-  honmoon.classList.add('strong');
-  status.textContent = "Honmoon is STRONG (Golden is more popular)";
-} else {
-  honmoon.classList.add('weak');
-  status.textContent = "Honmoon is WEAK (Your Idol is more popular)";
+      golden.textContent = data.goldenStreams.toLocaleString();
+      idol.textContent = data.idolStreams.toLocaleString();
+    })
+    .catch(error => {
+      console.error('Error fetching stream data:', error);
+    });
 }
+
+// Initial load + repeat every 15 seconds
+updateTracker();
+setInterval(updateTracker, 15000);
