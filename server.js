@@ -1,27 +1,46 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const axios = require('axios');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-
-// Serve frontend files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Mock stream data API
-app.get('/api/streams', (req, res) => {
-  const golden = Math.floor(Math.random() * 100000);
-  const idol = Math.floor(Math.random() * 100000);
-  res.json({
-    goldenStreams: golden,
-    idolStreams: idol,
-    trending: idol > golden ? 'your idol' : 'golden'
-  });
+// REAL stream data from RapidAPI
+app.get('/api/streams', async (req, res) => {
+  const headers = {
+    ''X-RapidAPI-Key': 'ef16e0854amsh9769731858997eep149822jsnc17a46c91c61', // 
+    'X-RapidAPI-Host': 'spotify-track-streams-playback-count1.p.rapidapi.com'
+  };
+
+  const url = 'https://spotify-track-streams-playback-count1.p.rapidapi.com/streams/isrc/';
+  const goldenISRC = 'QZ8BZ2513510';
+  const idolISRC = 'QZ8BZ2513512';
+
+  try {
+    const [goldenRes, idolRes] = await Promise.all([
+      axios.get(url + goldenISRC, { headers }),
+      axios.get(url + idolISRC, { headers })
+    ]);
+
+    const goldenStreams = goldenRes.data?.data?.streamCount || 0;
+    const idolStreams = idolRes.data?.data?.streamCount || 0;
+
+    res.json({
+      goldenStreams,
+      idolStreams,
+      trending: idolStreams > goldenStreams ? 'your idol' : 'golden'
+    });
+  } catch (error) {
+    console.error('Error fetching stream counts:', error);
+    res.status(500).json({ error: 'Failed to fetch stream data' });
+  }
 });
 
-// Serve frontend HTML for any other route
+// Serve frontend
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'));
 });
