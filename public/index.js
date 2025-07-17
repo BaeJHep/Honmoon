@@ -1,30 +1,32 @@
-function updateTracker() {
-  fetch('/api/streams')
-    .then(res => res.json())
-    .then(data => {
-      const honmoon = document.getElementById('honmoon');
-      const status = document.getElementById('status');
-      const golden = document.getElementById('goldenCount');
-      const idol = document.getElementById('idolCount');
+async function updateTracker() {
+  try {
+    const res = await fetch('/api/streams');
+    const data = await res.json();
 
-      if (data.trending === 'your idol') {
-        honmoon.classList.remove('strong');
-        honmoon.classList.add('weak');
-        status.textContent = 'WEAK';
-      } else {
-        honmoon.classList.remove('weak');
-        honmoon.classList.add('strong');
-        status.textContent = 'STRONG';
-      }
+    const honmoon = document.getElementById('honmoon');
+    const status = document.getElementById('status');
+    const goldenCount = document.getElementById('goldenCount');
+    const idolCount = document.getElementById('idolCount');
 
-      golden.textContent = data.goldenStreams.toLocaleString();
-      idol.textContent = data.idolStreams.toLocaleString();
-    })
-    .catch(error => {
-      console.error('Error fetching stream data:', error);
-    });
+    // Update counts
+    goldenCount.textContent = data.golden.toLocaleString();
+    idolCount.textContent   = data.idol.toLocaleString();
+
+    // Update status and Honmoon appearance
+    if (data.trending === 'your idol') {
+      honmoon.classList.remove('strong');
+      honmoon.classList.add('weak');
+      status.textContent = 'WEAK';
+    } else {
+      honmoon.classList.remove('weak');
+      honmoon.classList.add('strong');
+      status.textContent = 'STRONG';
+    }
+  } catch (err) {
+    console.error('Error fetching stream data:', err);
+  }
 }
 
-// Initial load + repeat every 15 seconds
+// Initial load and refresh every 15 seconds
 updateTracker();
 setInterval(updateTracker, 15000);
