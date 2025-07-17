@@ -6,18 +6,19 @@ const axios = require('axios');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Serve static files
 app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Stream data
+// API route for stream counts
 app.get('/api/streams', async (req, res) => {
-  const goldenISRC = 'QZ8BZ2513510';
-  const idolISRC = 'QZ8BZ2513512';
-
   const headers = {
-    'X-RapidAPI-Key': 'ef16e0854amsh9769731858997eep149822jsnc17a46c91c61',
+    'X-RapidAPI-Key': 'ef16e0854amsh9769731858997eep149822jsnc17a46c91c61', // your real key
     'X-RapidAPI-Host': 'spotify-track-streams-playback-count1.p.rapidapi.com'
   };
+
+  const goldenISRC = 'QZ8BZ2513510';
+  const idolISRC = 'QZ8BZ2513512';
 
   try {
     const [goldenRes, idolRes] = await Promise.all([
@@ -25,24 +26,22 @@ app.get('/api/streams', async (req, res) => {
       axios.get(`https://spotify-track-streams-playback-count1.p.rapidapi.com/streams/isrc/${idolISRC}`, { headers })
     ]);
 
-    const goldenStreams = goldenRes.data?.streams || 0;
-    const idolStreams = idolRes.data?.streams || 0;
+    const golden = goldenRes.data?.streams || 0;
+    const idol = idolRes.data?.streams || 0;
 
     res.json({
-      goldenStreams,
-      idolStreams,
-      trending: idolStreams > goldenStreams ? 'your idol' : 'golden',
-      sources: {
-        golden: 'https://open.spotify.com/track/1CPZ5BxNNd0n0nF4Orb9JS',
-        idol: 'https://open.spotify.com/track/1I37Zz2g3hk9eWxaNkj031'
-      }
+      goldenStreams: golden,
+      idolStreams: idol,
+      trending: idol > golden ? 'your idol' : 'golden'
     });
+
   } catch (error) {
-    console.error('RapidAPI fetch failed:', error?.response?.status, error?.response?.data);
+    console.error('Error fetching streams:', error?.response?.data || error.message);
     res.status(500).json({ error: 'Failed to fetch stream data' });
   }
 });
 
+// Fallback to frontend
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/index.html'));
 });
@@ -50,3 +49,4 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
