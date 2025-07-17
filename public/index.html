@@ -2,18 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Honmoon Tracker</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>Honmoon Tracker</h1>
-  <p>Status: <span id="status">Loading...</span></p>
-
+  <p>Honmoon Strength: <span id="status">Loading...</span></p>
   <div id="honmoon" class="honmoon strong"></div>
 
-  <p>Golden Streams: <span id="goldenCount">0</span></p>
-  <p>Your Idol Streams: <span id="idolCount">0</span></p>
+  <p>Golden Popularity Score: <span id="goldenCount">0</span></p>
+  <p>Your Idol Popularity Score: <span id="idolCount">0</span></p>
+
+  <p style="font-size: 0.9em; color: gray;">
+    * Spotify track popularity (0 – 100)
+  </p>
 
   <script src="index.js" defer></script>
 </body>
