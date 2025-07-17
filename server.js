@@ -12,7 +12,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // REAL stream data from RapidAPI
 app.get('/api/streams', async (req, res) => {
   const headers = {
-    ''X-RapidAPI-Key': 'ef16e0854amsh9769731858997eep149822jsnc17a46c91c61', // 
+    'X-RapidAPI-Key': 'ef16e0854amsh9769731858997eep149822jsnc17a46c91c61',
     'X-RapidAPI-Host': 'spotify-track-streams-playback-count1.p.rapidapi.com'
   };
 
