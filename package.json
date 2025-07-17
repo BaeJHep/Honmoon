@@ -1,0 +1,10 @@
+{
+  "name": "honmoon-backend",
+  "version": "1.0.0",
+  "description": "Backend for Honmoon Tracker",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {}
+}
