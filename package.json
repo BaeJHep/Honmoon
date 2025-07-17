@@ -1,13 +1,13 @@
 {
-  "name": "honmoon-backend",
+  "name": "honmoon-tracker",
   "version": "1.0.0",
-  "main": "index.js",
-  "type": "module",
+  "description": "Honmoon Tracker App",
+  "main": "server.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "node-fetch": "^3.3.2"
+    "cors": "^2.8.5"
   }
 }
