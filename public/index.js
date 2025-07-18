@@ -5,15 +5,19 @@ async function updateTracker() {
 
     const honmoon = document.getElementById('honmoon');
     const status = document.getElementById('status');
-    const goldenCount = document.getElementById('goldenCount');
-    const idolCount = document.getElementById('idolCount');
 
-    // Update popularity scores
-    goldenCount.textContent = data.golden.toLocaleString();
-    idolCount.textContent   = data.idol.toLocaleString();
+    // Group scores
+    document.getElementById('sajaScore').textContent = data.sajaScore;
+    document.getElementById('huntrixScore').textContent = data.huntrixScore;
 
-    // Update Honmoon strength
-    if (data.trending === 'your idol') {
+    // Individual song scores
+    document.getElementById('idolScore').textContent = data.idol;
+    document.getElementById('sodaScore').textContent = data.soda;
+    document.getElementById('goldenScore').textContent = data.golden;
+    document.getElementById('soundsScore').textContent = data.sounds;
+
+    // Update Honmoon state
+    if (data.trending === 'Saja Boys') {
       honmoon.classList.remove('strong');
       honmoon.classList.add('weak');
       status.textContent = 'WEAK';
@@ -27,6 +31,5 @@ async function updateTracker() {
   }
 }
 
-// Initial load + refresh every 15 seconds
 updateTracker();
 setInterval(updateTracker, 15000);
