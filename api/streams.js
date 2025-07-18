@@ -1,45 +1,48 @@
 const axios = require('axios');
 
-const clientId = process.env.SPOTIFY_CLIENT_ID;
-const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
-const GOLDEN_TRACK_ID = '1CPZ5BxNNd0n0nF4Orb9JS';
-const IDOL_TRACK_ID = '1I37Zz2g3hk9eWxaNkj031';
-
-let tokenCache = { token: null, expires: 0 };
-
-async function getAccessToken() {
-  if (tokenCache.token && Date.now() < tokenCache.expires) {
-    return tokenCache.token;
-  }
-  const resp = await axios({
-    method: 'post',
-    url: 'https://accounts.spotify.com/api/token',
-    headers: {
-      Authorization:
-        'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64'),
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    data: 'grant_type=client_credentials'
-  });
-  tokenCache.token = resp.data.access_token;
-  tokenCache.expires = Date.now() + resp.data.expires_in * 1000;
-  return tokenCache.token;
-}
-
 module.exports = async (req, res) => {
+  const headers = {
+    'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
+    'X-RapidAPI-Host': 'spotify-track-streams-playback-count1.p.rapidapi.com'
+  };
+
+  const url = 'https://spotify-track-streams-playback-count1.p.rapidapi.com/streams/isrc/';
+  const isrcs = {
+    idol: 'QZ8BZ2513512',
+    soda: 'QZ8BZ2513509',
+    golden: 'QZ8BZ2513510',
+    sounds: 'QZ8BZ2513514'
+  };
+
   try {
-    const token = await getAccessToken();
-    const headers = { Authorization: `Bearer ${token}` };
-    const [goldenRes, idolRes] = await Promise.all([
-      axios.get(`https://api.spotify.com/v1/tracks/${GOLDEN_TRACK_ID}`, { headers }),
-      axios.get(`https://api.spotify.com/v1/tracks/${IDOL_TRACK_ID}`, { headers })
+    const [idolRes, sodaRes, goldenRes, soundsRes] = await Promise.all([
+      axios.get(url + isrcs.idol, { headers }),
+      axios.get(url + isrcs.soda, { headers }),
+      axios.get(url + isrcs.golden, { headers }),
+      axios.get(url + isrcs.sounds, { headers })
     ]);
-    const golden = goldenRes.data.popularity || 0;
-    const idol = idolRes.data.popularity || 0;
-    res.status(200).json({ golden, idol, trending: idol > golden ? 'your idol' : 'golden' });
-  } catch (err) {
-    console.error('Spotify API error:', err.response?.data || err.message);
-    res.status(500).json({ error: 'Failed to fetch Spotify data' });
+
+    const sajaScore = (
+      (idolRes.data?.data?.popularity || 0) +
+      (sodaRes.data?.data?.popularity || 0)
+    ) / 2;
+
+    const huntrixScore = (
+      (goldenRes.data?.data?.popularity || 0) +
+      (soundsRes.data?.data?.popularity || 0)
+    ) / 2;
+
+    res.status(200).json({
+      idol: idolRes.data?.data?.popularity || 0,
+      soda: sodaRes.data?.data?.popularity || 0,
+      golden: goldenRes.data?.data?.popularity || 0,
+      sounds: soundsRes.data?.data?.popularity || 0,
+      sajaScore: Math.round(sajaScore),
+      huntrixScore: Math.round(huntrixScore),
+      trending: sajaScore > huntrixScore ? 'Saja Boys' : 'Huntrix'
+    });
+  } catch (error) {
+    console.error('Error fetching stream data:', error);
+    res.status(500).json({ error: 'Failed to fetch stream data' });
   }
 };
-
