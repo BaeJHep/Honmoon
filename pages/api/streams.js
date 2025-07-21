@@ -1,12 +1,12 @@
-import axios from 'axios';
+const axios = require('axios');
 
 const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
 
-const ISRC_CODES = {
-  'Soda Pop': 'QZ8BZ2513509',
-  'Your Idol': 'QZ8BZ2513512',
-  'Golden': 'QZ8BZ2513510',
-  'This Is What It Sounds Like': 'QZ8BZ2513514'
+const ISRC_SONGS = {
+  sodaPop: 'QZ8BZ2513509',
+  yourIdol: 'QZ8BZ2513512',
+  golden: 'QZ8BZ2513510',
+  thisIsWhatItSoundsLike: 'QZ8BZ2513514'
 };
 
 export default async function handler(req, res) {
@@ -16,38 +16,37 @@ export default async function handler(req, res) {
   };
 
   try {
-    const results = await Promise.all(
-      Object.entries(ISRC_CODES).map(async ([name, isrc]) => {
-        const response = await axios.get(
-          `https://spotify-track-streams-playback-count1.p.rapidapi.com/streams/isrc/${isrc}`,
-          { headers }
-        );
-        return {
-          name,
-          score: response.data?.data?.popularity || 0
-        };
-      })
-    );
+    const [sodaPopRes, yourIdolRes, goldenRes, thisIsWhatItSoundsLikeRes] = await Promise.all([
+      axios.get(`https://spotify-track-streams-playback-count1.p.rapidapi.com/streams/isrc/${ISRC_SONGS.sodaPop}`, { headers }),
+      axios.get(`https://spotify-track-streams-playback-count1.p.rapidapi.com/streams/isrc/${ISRC_SONGS.yourIdol}`, { headers }),
+      axios.get(`https://spotify-track-streams-playback-count1.p.rapidapi.com/streams/isrc/${ISRC_SONGS.golden}`, { headers }),
+      axios.get(`https://spotify-track-streams-playback-count1.p.rapidapi.com/streams/isrc/${ISRC_SONGS.thisIsWhatItSoundsLike}`, { headers })
+    ]);
 
-    const sajaBoysSongs = results.filter(song => song.name === 'Soda Pop' || song.name === 'Your Idol');
-    const huntrixSongs = results.filter(song => song.name === 'Golden' || song.name === 'This Is What It Sounds Like');
+    const getPopularity = (res) => res?.data?.data?.popularity ?? 0;
 
-    const sajaBoysTotal = sajaBoysSongs.reduce((sum, song) => sum + song.score, 0);
-    const huntrixTotal = huntrixSongs.reduce((sum, song) => sum + song.score, 0);
+    const scores = {
+      sodaPop: getPopularity(sodaPopRes),
+      yourIdol: getPopularity(yourIdolRes),
+      golden: getPopularity(goldenRes),
+      thisIsWhatItSoundsLike: getPopularity(thisIsWhatItSoundsLikeRes)
+    };
+
+    const sajaBoysScore = Math.round((scores.sodaPop + scores.yourIdol) / 2);
+    const huntrixScore = Math.round((scores.golden + scores.thisIsWhatItSoundsLike) / 2);
 
     res.status(200).json({
-      SajaBoys: {
-        total: sajaBoysTotal,
-        songs: sajaBoysSongs
-      },
-      Huntrix: {
-        total: huntrixTotal,
-        songs: huntrixSongs
-      },
-      trending: sajaBoysTotal > huntrixTotal ? 'Saja Boys' : 'Huntr/x'
+      scores,
+      sajaBoysScore,
+      huntrixScore,
+      trending: sajaBoysScore > huntrixScore ? 'Saja Boys' : 'Huntr/x'
     });
-
   } catch (error) {
+    console.error('API error:', error?.response?.data || error.message);
+    res.status(500).json({ error: 'Failed to fetch stream data' });
+  }
+}
+
     console.error('API error:', error.response?.data || error.message);
     res.status(500).json({ error: 'Failed to fetch popularity data' });
   }
