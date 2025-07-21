@@ -5,15 +5,27 @@ async function updateTracker() {
 
     const honmoon = document.getElementById('honmoon');
     const status = document.getElementById('status');
-    const goldenCount = document.getElementById('goldenCount');
-    const idolCount = document.getElementById('idolCount');
+    const sajaScoreEl = document.getElementById('sajaScore');
+    const huntrixScoreEl = document.getElementById('huntrixScore');
 
-    // Update popularity scores
-    goldenCount.textContent = data.golden.toLocaleString();
-    idolCount.textContent   = data.idol.toLocaleString();
+    // Individual song score elements
+    const sodaPopEl = document.getElementById('sodaPopScore');
+    const yourIdolEl = document.getElementById('yourIdolScore');
+    const goldenEl = document.getElementById('goldenScore');
+    const soundsLikeEl = document.getElementById('soundsLikeScore');
+
+    // Update combined scores
+    sajaScoreEl.textContent = data.sajaBoysScore ?? '--';
+    huntrixScoreEl.textContent = data.huntrixScore ?? '--';
+
+    // Update individual scores
+    sodaPopEl.textContent = data.scores?.sodaPop ?? '--';
+    yourIdolEl.textContent = data.scores?.yourIdol ?? '--';
+    goldenEl.textContent = data.scores?.golden ?? '--';
+    soundsLikeEl.textContent = data.scores?.thisIsWhatItSoundsLike ?? '--';
 
     // Update Honmoon strength
-    if (data.trending === 'your idol') {
+    if (data.trending === 'Saja Boys') {
       honmoon.classList.remove('strong');
       honmoon.classList.add('weak');
       status.textContent = 'WEAK';
@@ -30,3 +42,4 @@ async function updateTracker() {
 // Initial load + refresh every 15 seconds
 updateTracker();
 setInterval(updateTracker, 15000);
+
