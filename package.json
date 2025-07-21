@@ -1,11 +1,4 @@
-{{
-  "name": "honmoon-tracker",
-  "version": "1.0.0",
-  "type": "module",               ← Add this line
-  "main": "index.js",
-  "scripts": { /* ... */ },
-  "dependencies": { /* ... */ }
-}
+{
 
   "name": "honmoon-tracker",
   "version": "1.0.0",
