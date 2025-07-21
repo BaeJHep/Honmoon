@@ -8,7 +8,7 @@ const TRACK_IDS = {
   sodaPop:  '1CPZ5BxNNd0n0nF4Orb9JS',
   yourIdol: '1I37Zz2g3hk9eWxaNkj031',
   golden:   '1CPZ5BxNNd0n0nF4Orb9JS',           
-  sounds:   '1I37Zz2g3hk9eWxaNkj031'           
+  sounds:   '5sBDrrtLGbV64QJnEqfjer'           
 };
 
 let _token     = null;
