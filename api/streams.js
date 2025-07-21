@@ -1,4 +1,3 @@
-// pages/api/streams.js
 import axios from 'axios';
 
 const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
@@ -44,8 +43,9 @@ export default async function handler(req, res) {
       trending: sajaAvg > huntrixAvg ? 'Saja Boys' : 'Huntr/x'
     });
   } catch (e) {
-    console.error(e.response?.data || e.message);
-    res.status(500).json({ error: 'Fetch failed' });
+    console.error('API error:', e.response?.data || e.message);
+    res.status(500).json({ error: 'Failed to fetch stream data' });
   }
 }
+
 
