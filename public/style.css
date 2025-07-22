@@ -176,3 +176,31 @@ body {
 .crack-overlay {
   display: none !important;
 }
+/* ──────────────────────────────────────────────
+   Rings: uniform solid lines + stronger glow
+   ────────────────────────────────────────────── */
+
+/* Base ring update: solid, thicker */
+.ring {
+  /* replace your old dashed border with: */
+  border-style: solid !important;
+  border-width: 3px !important;    /* make the lines fatter */
+}
+
+/* Strong (icy blue) */
+.honmoon-wrapper.strong .ring {
+  border-color: rgba(173,216,230,0.8) !important;
+  box-shadow:
+    0 0 12px rgba(173,216,230,0.8),
+    0 0 24px rgba(0,255,255,0.5);
+}
+
+/* Weak (neon pink) */
+.honmoon-wrapper.weak .ring {
+  border-color: rgba(255,20,147,0.8) !important;
+  box-shadow:
+    0 0 12px rgba(255,20,147,0.9),
+    0 0 24px rgba(255,105,180,0.6),
+    inset 0 0 8px rgba(255,255,255,0.2); /* a little white inset glow to separate from sphere */
+}
+
