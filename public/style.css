@@ -1,119 +1,148 @@
 /* -------------------------------
-   style.css (complete)
+   style.css (3D honmoon + rings)
    ------------------------------- */
 
-/* base page styles */
+/* Base styles */
 body {
   margin: 0;
   background: #111;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  flex-direction: column;
-  font-family: 'Segoe UI', sans-serif;
   color: white;
+  font-family: 'Segoe UI',sans-serif;
   text-align: center;
 }
 
-/* allow the crack SVG to live inside the honmoon */
-#honmoon {
-  position: relative;
-  overflow: hidden;
-}
-
-/* the Honmoon circle */
-.honmoon {
-  width: 200px;
+/* Give a 3D perspective */
+.scene {
+  perspective: 800px;
+  margin: 40px auto 0;
+  width: 200px;  /* matches honmoon size */
   height: 200px;
-  border-radius: 50%;
-  transform-origin: center;              /* ensure centered jitter */
-  animation: pulseGlow 3s infinite ease-in-out;
-  transition: background 0.6s ease, box-shadow 0.6s ease;
 }
 
-/* STRONG (Huntrix lead) */
-.honmoon.strong {
-  background: radial-gradient(circle at 40% 40%, #8a2be2, #00ffff, #00008b);
-  box-shadow:
-    0 0 25px rgba(173, 216, 230, 0.8),
-    0 0 60px rgba(0, 255, 255, 0.6),
-    inset 0 0 30px rgba(255, 255, 255, 0.2);
+/* Wrapper holds both sphere and rings */
+.honmoon-wrapper {
+  position: relative;
+  width: 100%; height: 100%;
+  transform-style: preserve-3d;
 }
 
-/* WEAK (Saja Boys lead) with stronger glitch */
-.honmoon.weak {
-  background: radial-gradient(circle at 40% 40%, #ff1493, #ff69b4, #ff1493);
-  box-shadow:
-    0 0 30px rgba(255, 20, 147, 0.8),
-    0 0 70px rgba(255, 20, 147, 0.4),
-    inset 0 0 40px rgba(255, 192, 203, 0.2);
-  animation:
-    pulseGlow 1.5s ease-in-out infinite,
-    glitch    0.4s steps(2, end) infinite;
-}
-
-/* hide the crack by default */
-.crack-overlay {
-  opacity: 0;
+/* Sphere container */
+#honmoon {
   position: absolute;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  pointer-events: none;
-  z-index: 1;
-  transition: opacity 0.3s;
+  overflow: hidden;
 }
 
-/* show & flicker the crack only when weak */
+/* Sphere itself */
+.honmoon {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  transform-style: preserve-3d;
+  transform: translateZ(0px);
+  animation: pulseGlow 3s infinite ease-in-out;
+  transition: background 0.6s, box-shadow 0.6s;
+}
+
+/* Strong vs Weak sphere colors */
+.honmoon.strong {
+  background: radial-gradient(circle at 40% 40%, #8a2be2, #00ffff, #00008b);
+  box-shadow:
+    0 0 25px rgba(173,216,230,0.8),
+    0 0 60px rgba(0,255,255,0.6),
+    inset 0 0 30px rgba(255,255,255,0.2);
+}
+.honmoon.weak {
+  background: radial-gradient(circle at 40% 40%, #ff1493, #ff69b4, #ff1493);
+  box-shadow:
+    0 0 30px rgba(255,20,147,0.8),
+    0 0 70px rgba(255,20,147,0.4),
+    inset 0 0 40px rgba(255,192,203,0.2);
+  animation:
+    pulseGlow 1.5s ease-in-out infinite,
+    glitch    0.4s steps(2,end) infinite;
+}
+
+/* Cracks hidden by default */
+.crack-overlay {
+  opacity: 0;
+  position: absolute;
+  width: 100%; height: 100%;
+  transition: opacity 0.3s;
+}
 .honmoon.weak .crack-overlay {
   opacity: 1;
   animation: crackFlicker 2s infinite;
 }
-
-/* pulse glow animation */
-@keyframes pulseGlow {
-  0% {
-    transform: scale(1);
-    box-shadow:
-      0 0 50px rgba(255,255,255,0.2),
-      0 0 100px rgba(255,255,255,0.1),
-      inset 0 0 50px rgba(255,255,255,0.2);
-  }
-  50% {
-    transform: scale(1.03);
-    box-shadow:
-      0 0 70px rgba(255,255,255,0.35),
-      0 0 120px rgba(255,255,255,0.2),
-      inset 0 0 70px rgba(255,255,255,0.35);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow:
-      0 0 50px rgba(255,255,255,0.2),
-      0 0 100px rgba(255,255,255,0.1),
-      inset 0 0 50px rgba(255,255,255,0.2);
-  }
-}
-
-/* simplified glitch animation (no clip-path) */
-@keyframes glitch {
-  0%   { transform: none; }
-  20%  { transform: translate(-3px, 2px) skew(0.5deg); }
-  40%  { transform: translate(2px, -2px) skew(-0.5deg); }
-  60%  { transform: translate(-2px, 1px) skew(0.3deg); }
-  80%  { transform: translate(3px, -1px) skew(-0.3deg); }
-  100% { transform: none; }
-}
-
-/* crack flicker animation */
-@keyframes crackFlicker {
-  0%, 100% { opacity: 0.4; }
-  50%      { opacity: 0.7; }
-}
-/* neon pinkish–red crack lines */
 .crack-overlay path {
-  stroke: #ff1493 !important;          /* deep neon pink */
-  stroke-opacity: 0.8 !important;      /* make it stand out */
-  filter: drop-shadow(0 0 6px #ff1493); /* glow effect */
+  stroke: #ff1493 !important;
+  stroke-opacity: 0.8 !important;
+  filter: drop-shadow(0 0 6px #ff1493);
 }
 
+/* Rings base */
+.ring {
+  position: absolute;
+  top: 50%; left: 50%;
+  border-radius: 50%;
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+/* Colors based on strong vs weak */
+.honmoon-wrapper.strong .ring {
+  border: 2px dashed rgba(173,216,230,0.8);
+  box-shadow:
+    0 0 8px rgba(173,216,230,0.8),
+    0 0 16px rgba(0,255,255,0.5);
+}
+.honmoon-wrapper.weak .ring {
+  border: 2px dashed rgba(255,20,147,0.8);
+  box-shadow:
+    0 0 8px rgba(255,20,147,0.8),
+    0 0 16px rgba(255,105,180,0.5);
+}
+
+/* Each ring’s size, depth, and spin */
+.ring1 { width: 260px; height:260px; margin:-130px; /* center */
+  transform: rotateX(70deg) translateZ(80px) rotateY(0deg);
+  animation: spin 20s linear infinite;
+}
+.ring2 { width: 300px; height:300px; margin:-150px;
+  transform: rotateX(70deg) translateZ(100px) rotateY(0deg);
+  animation: spin 18s linear infinite reverse;
+}
+.ring3 { width: 340px; height:340px; margin:-170px;
+  transform: rotateX(70deg) translateZ(120px) rotateY(0deg);
+  animation: spin 22s linear infinite;
+}
+.ring4 { width: 380px; height:380px; margin:-190px;
+  transform: rotateX(70deg) translateZ(140px) rotateY(0deg);
+  animation: spin 24s linear infinite reverse;
+}
+
+/* keyframes */
+@keyframes pulseGlow {
+  0%   { transform: translateZ(0) scale(1); }
+  50%  { transform: translateZ(0) scale(1.03); }
+  100% { transform: translateZ(0) scale(1); }
+}
+
+@keyframes glitch {
+  0%   { transform: translateZ(0) none; }
+  20%  { transform: translateZ(0) translate(-3px,2px) skew(0.5deg); }
+  40%  { transform: translateZ(0) translate(2px,-2px) skew(-0.5deg); }
+  60%  { transform: translateZ(0) translate(-2px,1px) skew(0.3deg); }
+  80%  { transform: translateZ(0) translate(3px,-1px) skew(-0.3deg); }
+  100% { transform: translateZ(0) none; }
+}
+
+@keyframes crackFlicker {
+  0%,100% { opacity:0.4; }
+  50%     { opacity:0.7; }
+}
+
+@keyframes spin {
+  from { transform: rotateX(70deg) translateZ(var(--tz)) rotateY(0deg); }
+  to   { transform: rotateX(70deg) translateZ(var(--tz)) rotateY(360deg); }
+}
