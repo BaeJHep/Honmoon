@@ -166,3 +166,13 @@ body {
   0%,100% { opacity: 0.4; }
   50%      { opacity: 0.7; }
 }
+/* 1) Turn the wrapper into a perfect circle */
+.honmoon-wrapper {
+  border-radius: 50%;   /* makes the 200×200 box a circle */
+  overflow: hidden;     /* clips anything outside that circle */
+}
+
+/* 2) Hide the crack overlay */
+.crack-overlay {
+  display: none !important;
+}
