@@ -4,53 +4,60 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Honmoon Tracker 3D</title>
+  <!-- In CodePen you can skip this and just paste the CSS below -->
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <h1>Honmoon Tracker</h1>
   <p>Honmoon Strength: <span id="status">Loading…</span></p>
 
-  <!-- scene provides the 3D perspective -->
-  <div class="scene">
-    <!-- honmoon-wrapper carries the strong/weak class -->
-    <div class="honmoon-wrapper strong">
-      <div id="honmoon" class="honmoon strong">
-        <!-- crack SVG -->
-        <svg class="crack-overlay" viewBox="0 0 200 200" preserveAspectRatio="none">
-          <path d="M100,0 L90,30 L95,60 L85,90 L100,120 L95,150 L105,180"
-                stroke="#ff1493" stroke-width="3" fill="none" stroke-opacity="0.8"/>
-          <path d="M0,100 L30,110 L60,105 L90,115 L120,100 L150,105 L180,90"
-                stroke="#ff1493" stroke-width="3" fill="none" stroke-opacity="0.8"/>
-        </svg>
-      </div>
-      <!-- four 3D rings -->
-      <div class="ring ring1"></div>
-      <div class="ring ring2"></div>
-      <div class="ring ring3"></div>
-      <div class="ring ring4"></div>
+  <div class="honmoon-wrapper strong">
+    <div id="honmoon" class="honmoon strong">
+      <svg class="crack-overlay" viewBox="0 0 200 200" preserveAspectRatio="none">
+        <path
+          d="M100,0 L90,30 L95,60 L85,90 L100,120 L95,150 L105,180"
+          stroke="#ff1493"
+          stroke-width="3"
+          fill="none"
+          stroke-opacity="0.8"
+        />
+        <path
+          d="M0,100 L30,110 L60,105 L90,115 L120,100 L150,105 L180,90"
+          stroke="#ff1493"
+          stroke-width="3"
+          fill="none"
+          stroke-opacity="0.8"
+        />
+      </svg>
     </div>
+    <div class="ring ring1"></div>
+    <div class="ring ring2"></div>
+    <div class="ring ring3"></div>
+    <div class="ring ring4"></div>
   </div>
 
   <div class="score-summary">
     <p><strong>Saja Boys Score:</strong> <span id="sajaScore">--</span></p>
-    <p><strong>Huntr/x Score:</strong> <span id="huntrixScore">--</span></p>
+    <p><strong>Huntr/x Score:</strong>  <span id="huntrixScore">--</span></p>
   </div>
 
   <table>
     <thead>
       <tr>
-        <th>Saja Boys Songs</th>
-        <th>Score</th>
-        <th>Huntr/x Songs</th>
-        <th>Score</th>
+        <th>Saja Boys Songs</th><th>Score</th>
+        <th>Huntr/x Songs</th><th>Score</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>Your Idol</td><td id="yourIdolScore">--</td>
-        <td>Golden</td>  <td id="goldenScore">--</td>
+        <td>Your Idol</td>
+        <td id="yourIdolScore">--</td>
+        <td>Golden</td>
+        <td id="goldenScore">--</td>
       </tr>
       <tr>
-        <td>Soda Pop</td><td id="sodaPopScore">--</td>
+        <td>Soda Pop</td>
+        <td id="sodaPopScore">--</td>
         <td>This Is What It Sounds Like</td>
         <td id="soundsScore">--</td>
       </tr>
