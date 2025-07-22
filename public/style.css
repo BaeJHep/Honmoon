@@ -110,4 +110,10 @@ body {
   0%, 100% { opacity: 0.4; }
   50%      { opacity: 0.7; }
 }
+/* neon pinkish–red crack lines */
+.crack-overlay path {
+  stroke: #ff1493 !important;          /* deep neon pink */
+  stroke-opacity: 0.8 !important;      /* make it stand out */
+  filter: drop-shadow(0 0 6px #ff1493); /* glow effect */
+}
 
