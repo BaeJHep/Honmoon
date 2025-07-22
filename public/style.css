@@ -1,5 +1,5 @@
 /* -------------------------------
-   style.css (paste into CSS panel)
+   style.css (full updated version)
    ------------------------------- */
 
 /* base page styles */
@@ -27,6 +27,7 @@ body {
   width: 200px;
   height: 200px;
   border-radius: 50%;
+  transform-origin: center;              /* ensure centered jitter */
   animation: pulseGlow 3s infinite ease-in-out;
   transition: background 0.6s ease, box-shadow 0.6s ease;
 }
@@ -52,12 +53,20 @@ body {
     glitch    0.4s steps(2, end) infinite;
 }
 
-/* overlayed crack SVG inside the circle */
+/* hide the crack by default */
 .crack-overlay {
+  opacity: 0;
   position: absolute;
   top: 0; left: 0;
   width: 100%; height: 100%;
   pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.3s;
+}
+
+/* show & flicker the crack only when weak */
+.honmoon.weak .crack-overlay {
+  opacity: 1;
   animation: crackFlicker 2s infinite;
 }
 
@@ -86,38 +95,18 @@ body {
   }
 }
 
-/* glitch effect */
+/* simplified glitch animation (no clip-path) */
 @keyframes glitch {
-  0% {
-    clip-path: inset(0 0 0 0);
-    transform: translate(0,0);
-  }
-  20% {
-    clip-path: inset(10% 0 20% 0);
-    transform: translate(-3px, 2px) skew(0.5deg);
-  }
-  40% {
-    clip-path: inset(30% 0 10% 0);
-    transform: translate(2px, -2px) skew(-0.5deg);
-  }
-  60% {
-    clip-path: inset(20% 0 30% 0);
-    transform: translate(-2px, 1px) skew(0.3deg);
-  }
-  80% {
-    clip-path: inset(30% 0 20% 0);
-    transform: translate(3px, -1px) skew(-0.3deg);
-  }
-  100% {
-    clip-path: inset(0 0 0 0);
-    transform: translate(0,0);
-  }
+  0%   { transform: none; }
+  20%  { transform: translate(-3px, 2px) skew(0.5deg); }
+  40%  { transform: translate(2px, -2px) skew(-0.5deg); }
+  60%  { transform: translate(-2px, 1px) skew(0.3deg); }
+  80%  { transform: translate(3px, -1px) skew(-0.3deg); }
+  100% { transform: none; }
 }
 
-/* crack overlay flicker */
+/* crack flicker animation */
 @keyframes crackFlicker {
-  0%, 100% { opacity: 0.2; }
-  50%      { opacity: 0.35; }
-}
-
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 0.7; }
 }
