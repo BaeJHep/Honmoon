@@ -1,50 +1,55 @@
-/* -------------------------------
-   style.css (3D honmoon + rings)
-   ------------------------------- */
+/* --------------------------------------
+   style.css (3D Honmoon + orbital rings)
+   -------------------------------------- */
 
-/* Base styles */
-body {
+/* 1) Center everything & prevent page scroll */
+html, body {
   margin: 0;
+  height: 100%;
+  overflow-x: hidden;      /* no horizontal scroll */
+}
+body {
   background: #111;
   color: white;
-  font-family: 'Segoe UI',sans-serif;
+  font-family: 'Segoe UI', sans-serif;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 20px;
 }
 
-/* Give a 3D perspective */
-.scene {
-  perspective: 800px;
-  margin: 40px auto 0;
-  width: 200px;  /* matches honmoon size */
-  height: 200px;
-}
-
-/* Wrapper holds both sphere and rings */
+/* 2) The 3D container with overflow hidden so rings don’t push out the page */
 .honmoon-wrapper {
   position: relative;
-  width: 100%; height: 100%;
+  width: 200px;
+  height: 200px;
+  perspective: 800px;          /* 3D camera */
   transform-style: preserve-3d;
+  overflow: hidden;            /* clip any layout overflow */
+  margin: 20px 0;
 }
 
-/* Sphere container */
+/* 3) Sphere container (for cracks) */
 #honmoon {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  position: relative;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
 }
 
-/* Sphere itself */
+/* 4) The Honmoon sphere */
 .honmoon {
-  width: 100%; height: 100%;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   transform-style: preserve-3d;
-  transform: translateZ(0px);
   animation: pulseGlow 3s infinite ease-in-out;
   transition: background 0.6s, box-shadow 0.6s;
 }
 
-/* Strong vs Weak sphere colors */
+/* STRONG = icy blue */
 .honmoon.strong {
   background: radial-gradient(circle at 40% 40%, #8a2be2, #00ffff, #00008b);
   box-shadow:
@@ -52,6 +57,8 @@ body {
     0 0 60px rgba(0,255,255,0.6),
     inset 0 0 30px rgba(255,255,255,0.2);
 }
+
+/* WEAK = neon pink + glitch */
 .honmoon.weak {
   background: radial-gradient(circle at 40% 40%, #ff1493, #ff69b4, #ff1493);
   box-shadow:
@@ -63,11 +70,13 @@ body {
     glitch    0.4s steps(2,end) infinite;
 }
 
-/* Cracks hidden by default */
+/* 5) Crack overlay (hidden until .weak) */
 .crack-overlay {
   opacity: 0;
   position: absolute;
+  top: 0; left: 0;
   width: 100%; height: 100%;
+  pointer-events: none;
   transition: opacity 0.3s;
 }
 .honmoon.weak .crack-overlay {
@@ -80,54 +89,69 @@ body {
   filter: drop-shadow(0 0 6px #ff1493);
 }
 
-/* Rings base */
+/* 6) Ring base */
 .ring {
   position: absolute;
-  top: 50%; left: 50%;
-  border-radius: 50%;
+  top: 50%;
+  left: 50%;
   transform-style: preserve-3d;
   pointer-events: none;
 }
 
-/* Colors based on strong vs weak */
+/* 7) Individual ring sizes & depth (via CSS var) */
+.ring1 { width: 260px; height: 260px; --tz: 80px; }
+.ring2 { width: 300px; height: 300px; --tz:100px; }
+.ring3 { width: 340px; height: 340px; --tz:120px; }
+.ring4 { width: 380px; height: 380px; --tz:140px; }
+
+/* 8) Ring colors in sync with .honmoon-wrapper state */
 .honmoon-wrapper.strong .ring {
   border: 2px dashed rgba(173,216,230,0.8);
   box-shadow:
-    0 0 8px rgba(173,216,230,0.8),
+    0 0  8px rgba(173,216,230,0.8),
     0 0 16px rgba(0,255,255,0.5);
 }
 .honmoon-wrapper.weak .ring {
   border: 2px dashed rgba(255,20,147,0.8);
   box-shadow:
-    0 0 8px rgba(255,20,147,0.8),
+    0 0  8px rgba(255,20,147,0.8),
     0 0 16px rgba(255,105,180,0.5);
 }
 
-/* Each ring’s size, depth, and spin */
-.ring1 { width: 260px; height:260px; margin:-130px; /* center */
-  transform: rotateX(70deg) translateZ(80px) rotateY(0deg);
-  animation: spin 20s linear infinite;
-}
-.ring2 { width: 300px; height:300px; margin:-150px;
-  transform: rotateX(70deg) translateZ(100px) rotateY(0deg);
-  animation: spin 18s linear infinite reverse;
-}
-.ring3 { width: 340px; height:340px; margin:-170px;
-  transform: rotateX(70deg) translateZ(120px) rotateY(0deg);
-  animation: spin 22s linear infinite;
-}
-.ring4 { width: 380px; height:380px; margin:-190px;
-  transform: rotateX(70deg) translateZ(140px) rotateY(0deg);
-  animation: spin 24s linear infinite reverse;
+/* 9) Spin each ring around Y, with alternating speeds/directions */
+.ring1 { animation: spin 20s linear infinite; }
+.ring2 { animation: spin 18s linear infinite reverse; }
+.ring3 { animation: spin 22s linear infinite; }
+.ring4 { animation: spin 24s linear infinite reverse; }
+
+/* 10) Keyframes */
+
+/* orbital spin: translate(-50%,-50%) centers it, then tilt & push out in Z, then rotateY */
+@keyframes spin {
+  from {
+    transform:
+      translate(-50%,-50%)
+      rotateX(70deg)
+      translateZ(var(--tz))
+      rotateY(0deg);
+  }
+  to {
+    transform:
+      translate(-50%,-50%)
+      rotateX(70deg)
+      translateZ(var(--tz))
+      rotateY(360deg);
+  }
 }
 
-/* keyframes */
+/* sphere pulse */
 @keyframes pulseGlow {
   0%   { transform: translateZ(0) scale(1); }
   50%  { transform: translateZ(0) scale(1.03); }
   100% { transform: translateZ(0) scale(1); }
 }
 
+/* glitch shake */
 @keyframes glitch {
   0%   { transform: translateZ(0) none; }
   20%  { transform: translateZ(0) translate(-3px,2px) skew(0.5deg); }
@@ -137,12 +161,8 @@ body {
   100% { transform: translateZ(0) none; }
 }
 
+/* crack flicker */
 @keyframes crackFlicker {
-  0%,100% { opacity:0.4; }
-  50%     { opacity:0.7; }
-}
-
-@keyframes spin {
-  from { transform: rotateX(70deg) translateZ(var(--tz)) rotateY(0deg); }
-  to   { transform: rotateX(70deg) translateZ(var(--tz)) rotateY(360deg); }
+  0%,100% { opacity: 0.4; }
+  50%      { opacity: 0.7; }
 }
