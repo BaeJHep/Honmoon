@@ -2,7 +2,7 @@ let flashInterval = null;
 
 async function updateTracker() {
   try {
-    const res = await fetch('/api/streams');
+    const res  = await fetch('/api/streams');
     const data = await res.json();
 
     const honmoon        = document.getElementById('honmoon');
@@ -15,24 +15,24 @@ async function updateTracker() {
     const soundsEl       = document.getElementById('soundsScore');
 
     // Combined scores
-    const saja = data.sajaBoysScore;
+    const saja    = data.sajaBoysScore;
     const huntrix = data.huntrixScore;
-    sajaScoreEl.textContent    = saja  ?? '--';
+
+    // Update display values
+    sajaScoreEl.textContent    = saja   ?? '--';
     huntrixScoreEl.textContent = huntrix ?? '--';
+    yourIdolEl.textContent     = data.scores.yourIdol ?? '--';
+    sodaPopEl.textContent      = data.scores.sodaPop  ?? '--';
+    goldenEl.textContent       = data.scores.golden   ?? '--';
+    soundsEl.textContent       = data.scores.sounds   ?? '--';  // fixed property name
 
-    // Individual scores
-    yourIdolEl.textContent = data.scores.yourIdol              ?? '--';
-    sodaPopEl.textContent  = data.scores.sodaPop               ?? '--';
-    goldenEl.textContent   = data.scores.golden                ?? '--';
-    soundsEl.textContent   = data.scores.thisIsWhatItSoundsLike?? '--';
-
-    // Clear any existing flash
+    // Clear any existing flash interval
     if (flashInterval) {
       clearInterval(flashInterval);
       flashInterval = null;
     }
 
-    // Tie: flash between classes
+    // Tie → flash between strong/weak
     if (saja === huntrix) {
       statusEl.textContent = 'TIE';
       let showSaja = false;
@@ -42,12 +42,14 @@ async function updateTracker() {
         honmoon.classList.toggle('weak', showSaja);
       }, 1000);
     }
-    // No tie: solid state
-    else if (huntrix > saja) {
-      honmoon.classList.replace('strong','weak');
+    // Saja Boys lead → pink ("weak")
+    else if (saja > huntrix) {
+      honmoon.classList.replace('strong', 'weak');
       statusEl.textContent = 'WEAK';
-    } else {
-      honmoon.classList.replace('weak','strong');
+    }
+    // Huntr/x lead → purple ("strong")
+    else {
+      honmoon.classList.replace('weak', 'strong');
       statusEl.textContent = 'STRONG';
     }
 
