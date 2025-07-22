@@ -4,39 +4,38 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Honmoon Tracker v1.1</title>
+  <!-- If you’re in CodePen, you can omit this and just paste your CSS in the CSS panel -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>Honmoon Tracker</h1>
   <p>Honmoon Strength: <span id="status">Loading…</span></p>
 
-  <div id="honmoon" class="honmoon strong"></div>
   <div id="honmoon" class="honmoon weak">
-  <!-- Inline crack SVG: will only show when .weak -->
-  <svg
-    class="crack-overlay"
-    viewBox="0 0 200 200"
-    preserveAspectRatio="none"
-  >
-    <!-- vertical crack -->
-    <path
-      d="M100,0 L90,30 L95,60 L85,90 L100,120 L95,150 L105,180"
-      stroke="#fff"
-      stroke-width="3"
-      fill="none"
-      stroke-opacity="0.6"
-    />
-    <!-- horizontal crack -->
-    <path
-      d="M0,100 L30,110 L60,105 L90,115 L120,100 L150,105 L180,90"
-      stroke="#fff"
-      stroke-width="3"
-      fill="none"
-      stroke-opacity="0.6"
-    />
-  </svg>
-</div>
-
+    <!-- Inline crack SVG — it’s hidden by default, then fades in on .weak -->
+    <svg
+      class="crack-overlay"
+      viewBox="0 0 200 200"
+      preserveAspectRatio="none"
+    >
+      <!-- vertical crack line -->
+      <path
+        d="M100,0 L90,30 L95,60 L85,90 L100,120 L95,150 L105,180"
+        stroke="#fff"
+        stroke-width="3"
+        fill="none"
+        stroke-opacity="0.6"
+      />
+      <!-- horizontal crack line -->
+      <path
+        d="M0,100 L30,110 L60,105 L90,115 L120,100 L150,105 L180,90"
+        stroke="#fff"
+        stroke-width="3"
+        fill="none"
+        stroke-opacity="0.6"
+      />
+    </svg>
+  </div>
 
   <div class="score-summary">
     <p><strong>Saja Boys Score:</strong> <span id="sajaScore">--</span></p>
