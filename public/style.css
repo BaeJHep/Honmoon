@@ -1,12 +1,12 @@
-/* --------------------------------------
-   style.css (3D Honmoon + orbital rings)
-   -------------------------------------- */
+/* -------------------------------
+   style.css (complete with single ripple)
+   ------------------------------- */
 
-/* 1) Center everything & prevent page scroll */
+/* 1) Base page styles & prevent scrolling */
 html, body {
   margin: 0;
   height: 100%;
-  overflow-x: hidden;      /* no horizontal scroll */
+  overflow-x: hidden;
 }
 body {
   background: #111;
@@ -20,18 +20,26 @@ body {
   padding-top: 20px;
 }
 
-/* 2) The 3D container with overflow hidden so rings don’t push out the page */
+/* 2) Wrapper for Honmoon (3D container) */
 .honmoon-wrapper {
   position: relative;
   width: 200px;
   height: 200px;
-  perspective: 800px;          /* 3D camera */
+  perspective: 800px;
   transform-style: preserve-3d;
-  overflow: hidden;            /* clip any layout overflow */
+  overflow: hidden;
+  border-radius: 50%;              /* clip to a circle */
   margin: 20px 0;
+  /* ripple color defaults to icy blue */
+  --ripple-color: rgba(173, 216, 230, 0.8);
 }
 
-/* 3) Sphere container (for cracks) */
+/* 3) Switch ripple color on "weak" state */
+.honmoon-wrapper.weak {
+  --ripple-color: rgba(255, 20, 147, 0.8);
+}
+
+/* 4) Sphere container */
 #honmoon {
   position: relative;
   width: 100%;
@@ -39,247 +47,51 @@ body {
   overflow: hidden;
 }
 
-/* 4) The Honmoon sphere */
+/* 5) Honmoon sphere styles */
 .honmoon {
   width: 100%;
   height: 100%;
   border-radius: 50%;
   transform-style: preserve-3d;
+  transform: translateZ(0);
   animation: pulseGlow 3s infinite ease-in-out;
   transition: background 0.6s, box-shadow 0.6s;
 }
 
-/* STRONG = icy blue */
+/* 6) STRONG state (icy blue) */
 .honmoon.strong {
   background: radial-gradient(circle at 40% 40%, #8a2be2, #00ffff, #00008b);
   box-shadow:
-    0 0 25px rgba(173,216,230,0.8),
-    0 0 60px rgba(0,255,255,0.6),
-    inset 0 0 30px rgba(255,255,255,0.2);
+    0 0 25px rgba(173, 216, 230, 0.8),
+    0 0 60px rgba(0, 255, 255, 0.6),
+    inset 0 0 30px rgba(255, 255, 255, 0.2);
 }
 
-/* WEAK = neon pink + glitch */
+/* 7) WEAK state (neon pink) + glitch */
 .honmoon.weak {
   background: radial-gradient(circle at 40% 40%, #ff1493, #ff69b4, #ff1493);
   box-shadow:
-    0 0 30px rgba(255,20,147,0.8),
-    0 0 70px rgba(255,20,147,0.4),
-    inset 0 0 40px rgba(255,192,203,0.2);
+    0 0 30px rgba(255, 20, 147, 0.8),
+    0 0 70px rgba(255, 20, 147, 0.4),
+    inset 0 0 40px rgba(255, 192, 203, 0.2);
   animation:
     pulseGlow 1.5s ease-in-out infinite,
-    glitch    0.4s steps(2,end) infinite;
+    glitch    0.4s steps(2, end) infinite;
 }
 
-/* 5) Crack overlay (hidden until .weak) */
-.crack-overlay {
-  opacity: 0;
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
-  transition: opacity 0.3s;
-}
-.honmoon.weak .crack-overlay {
-  opacity: 1;
-  animation: crackFlicker 2s infinite;
-}
-.crack-overlay path {
-  stroke: #ff1493 !important;
-  stroke-opacity: 0.8 !important;
-  filter: drop-shadow(0 0 6px #ff1493);
-}
-
-/* 6) Ring base */
-.ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform-style: preserve-3d;
-  pointer-events: none;
-}
-
-/* 7) Individual ring sizes & depth (via CSS var) */
-.ring1 { width: 260px; height: 260px; --tz: 80px; }
-.ring2 { width: 300px; height: 300px; --tz:100px; }
-.ring3 { width: 340px; height: 340px; --tz:120px; }
-.ring4 { width: 380px; height: 380px; --tz:140px; }
-
-/* 8) Ring colors in sync with .honmoon-wrapper state */
-.honmoon-wrapper.strong .ring {
-  border: 2px dashed rgba(173,216,230,0.8);
-  box-shadow:
-    0 0  8px rgba(173,216,230,0.8),
-    0 0 16px rgba(0,255,255,0.5);
-}
-.honmoon-wrapper.weak .ring {
-  border: 2px dashed rgba(255,20,147,0.8);
-  box-shadow:
-    0 0  8px rgba(255,20,147,0.8),
-    0 0 16px rgba(255,105,180,0.5);
-}
-
-/* 9) Spin each ring around Y, with alternating speeds/directions */
-.ring1 { animation: spin 20s linear infinite; }
-.ring2 { animation: spin 18s linear infinite reverse; }
-.ring3 { animation: spin 22s linear infinite; }
-.ring4 { animation: spin 24s linear infinite reverse; }
-
-/* 10) Keyframes */
-
-/* orbital spin: translate(-50%,-50%) centers it, then tilt & push out in Z, then rotateY */
-@keyframes spin {
-  from {
-    transform:
-      translate(-50%,-50%)
-      rotateX(70deg)
-      translateZ(var(--tz))
-      rotateY(0deg);
-  }
-  to {
-    transform:
-      translate(-50%,-50%)
-      rotateX(70deg)
-      translateZ(var(--tz))
-      rotateY(360deg);
-  }
-}
-
-/* sphere pulse */
-@keyframes pulseGlow {
-  0%   { transform: translateZ(0) scale(1); }
-  50%  { transform: translateZ(0) scale(1.03); }
-  100% { transform: translateZ(0) scale(1); }
-}
-
-/* glitch shake */
-@keyframes glitch {
-  0%   { transform: translateZ(0) none; }
-  20%  { transform: translateZ(0) translate(-3px,2px) skew(0.5deg); }
-  40%  { transform: translateZ(0) translate(2px,-2px) skew(-0.5deg); }
-  60%  { transform: translateZ(0) translate(-2px,1px) skew(0.3deg); }
-  80%  { transform: translateZ(0) translate(3px,-1px) skew(-0.3deg); }
-  100% { transform: translateZ(0) none; }
-}
-
-/* crack flicker */
-@keyframes crackFlicker {
-  0%,100% { opacity: 0.4; }
-  50%      { opacity: 0.7; }
-}
-/* 1) Turn the wrapper into a perfect circle */
-.honmoon-wrapper {
-  border-radius: 50%;   /* makes the 200×200 box a circle */
-  overflow: hidden;     /* clips anything outside that circle */
-}
-
-/* 2) Hide the crack overlay */
+/* 8) Remove legacy rings & crack overlay */
+.ring,
 .crack-overlay {
   display: none !important;
 }
-/* ──────────────────────────────────────────────
-   Rings: uniform solid lines + stronger glow
-   ────────────────────────────────────────────── */
 
-/* Base ring update: solid, thicker */
-.ring {
-  /* replace your old dashed border with: */
-  border-style: solid !important;
-  border-width: 3px !important;    /* make the lines fatter */
-}
-
-/* Strong (icy blue) */
-.honmoon-wrapper.strong .ring {
-  border-color: rgba(173,216,230,0.8) !important;
-  box-shadow:
-    0 0 12px rgba(173,216,230,0.8),
-    0 0 24px rgba(0,255,255,0.5);
-}
-
-/* Weak (neon pink) */
-.honmoon-wrapper.weak .ring {
-  border-color: rgba(255,20,147,0.8) !important;
-  box-shadow:
-    0 0 12px rgba(255,20,147,0.9),
-    0 0 24px rgba(255,105,180,0.6),
-    inset 0 0 8px rgba(255,255,255,0.2); /* a little white inset glow to separate from sphere */
-}
-/* ───────────────────────────────────────────────────────
-   Ripple overlay on the sphere
-   ─────────────────────────────────────────────────────── */
-.honmoon-wrapper {
-  /* define a CSS variable for ripple color */
-  --ripple-color: rgba(173,216,230,0.8);
-}
-
-/* override for the “weak” state */
-.honmoon-wrapper.weak {
-  --ripple-color: rgba(255,20,147,0.8);
-}
-
-/* attach the ripple as a pseudo-element on the sphere */
-.honmoon::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  border-radius: 50%;
-  pointer-events: none;
-
-  /* repeating circles: 1px ripple line, 7px gap */
-  background: repeating-radial-gradient(
-    circle at center,
-    var(--ripple-color) 0px,
-    var(--ripple-color) 1px,
-    transparent 1px,
-    transparent 8px
-  );
-
-  /* two animations:
-     1) expand the ring spacing (rippleMove)
-     2) fade in/out for a softer feel (rippleFade) */
-  animation:
-    rippleMove 4s linear infinite,
-    rippleFade 4s ease-in-out infinite;
-}
-
-/* animate the distance between rings */
-@keyframes rippleMove {
-  from { background-size: 4px 4px; }
-  to   { background-size: 60px 60px; }
-}
-
-/* gentle fade on the rings so they aren’t too stark */
-@keyframes rippleFade {
-  0%,100% { opacity: 0.2; }
-  50%     { opacity: 0.7; }
-}
-/* ───────────────────────────────────────────────────────────
-   1) Hide any leftover static rings
-   ─────────────────────────────────────────────────────────── */
-.ring {
-  display: none !important;
-}
-
-/* ───────────────────────────────────────────────────────────
-   2) Remove the old multi-dot ripple (if you still have it)
-   ─────────────────────────────────────────────────────────── */
-.honmoon::before {
-  background: none !important;
-}
-
-/* ───────────────────────────────────────────────────────────
-   3) New single-ripple effect via ::after
-   ─────────────────────────────────────────────────────────── */
-.honmoon {
-  position: relative;     /* ensure pseudo-element is positioned */
-  overflow: hidden;       /* clip it perfectly to the circle */
-}
-
+/* 9) Single ripple effect via ::after */
 .honmoon::after {
   content: "";
   position: absolute;
-  top: 0; left: 0;
-  width: 100%;  /* matches the honmoon diameter */
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100%;
   border-radius: 50%;
   border: 3px solid var(--ripple-color);
@@ -290,8 +102,10 @@ body {
 }
 
 /* ───────────────────────────────────────────────────────────
-   4) Ripple keyframes: expand & fade
+   Keyframes
    ─────────────────────────────────────────────────────────── */
+
+/* ripple expands and fades */
 @keyframes ripple {
   0% {
     transform: scale(0.6);
@@ -304,5 +118,22 @@ body {
     transform: scale(1.4);
     opacity:   0;
   }
+}
+
+/* sphere pulse glow */
+@keyframes pulseGlow {
+  0%   { transform: translateZ(0) scale(1); }
+  50%  { transform: translateZ(0) scale(1.03); }
+  100% { transform: translateZ(0) scale(1); }
+}
+
+/* glitch shake (for weak state) */
+@keyframes glitch {
+  0%   { transform: translateZ(0) none; }
+  20%  { transform: translateZ(0) translate(-3px, 2px) skew(0.5deg); }
+  40%  { transform: translateZ(0) translate(2px, -2px) skew(-0.5deg); }
+  60%  { transform: translateZ(0) translate(-2px, 1px) skew(0.3deg); }
+  80%  { transform: translateZ(0) translate(3px, -1px) skew(-0.3deg); }
+  100% { transform: translateZ(0) none; }
 }
 
