@@ -2,7 +2,7 @@
    style.css (complete with single ripple)
    ------------------------------- */
 
-/* 1) Base page styles & prevent scrolling */
+/* 1) Base page styles & prevent unwanted scroll */
 html, body {
   margin: 0;
   height: 100%;
@@ -28,7 +28,7 @@ body {
   perspective: 800px;
   transform-style: preserve-3d;
   overflow: hidden;
-  border-radius: 50%;              /* clip to a circle */
+  border-radius: 50%;
   margin: 20px 0;
   /* ripple color defaults to icy blue */
   --ripple-color: rgba(173, 216, 230, 0.8);
@@ -47,7 +47,7 @@ body {
   overflow: hidden;
 }
 
-/* 5) Honmoon sphere styles */
+/* 5) Honmoon sphere base */
 .honmoon {
   width: 100%;
   height: 100%;
@@ -79,7 +79,7 @@ body {
     glitch    0.4s steps(2, end) infinite;
 }
 
-/* 8) Remove legacy rings & crack overlay */
+/* 8) Remove any leftover rings or cracks */
 .ring,
 .crack-overlay {
   display: none !important;
@@ -89,10 +89,8 @@ body {
 .honmoon::after {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   border-radius: 50%;
   border: 3px solid var(--ripple-color);
   transform: scale(0.6);
