@@ -146,4 +146,55 @@ body {
   80%  { transform: translate(3px,-1px) skew(-0.3deg); }
   100% { transform: none; }
 }
+/* ────────────────────────────────────────
+   Dramatic Glowing Ripples (Replace old)
+   ──────────────────────────────────────── */
+
+/* #1 via ::after on .honmoon */
+.honmoon::after {
+  border: 4px solid var(--ripple-color-1);
+  box-shadow:
+    0 0 8px var(--ripple-color-1),
+    0 0 16px var(--ripple-color-1),
+    0 0 32px var(--ripple-color-1);
+  animation: ripple 6s ease-out infinite 0s;
+}
+
+/* #2 via first .ripple child */
+.honmoon-wrapper .ripple:nth-of-type(1) {
+  border: 4px solid var(--ripple-color-2);
+  box-shadow:
+    0 0 8px var(--ripple-color-2),
+    0 0 16px var(--ripple-color-2),
+    0 0 32px var(--ripple-color-2);
+  animation: ripple 6s ease-out infinite 2s;
+}
+
+/* #3 via second .ripple child */
+.honmoon-wrapper .ripple:nth-of-type(2) {
+  border: 4px solid var(--ripple-color-3);
+  box-shadow:
+    0 0 8px var(--ripple-color-3),
+    0 0 16px var(--ripple-color-3),
+    0 0 32px var(--ripple-color-3);
+  animation: ripple 6s ease-out infinite 4s;
+}
+
+/* Dramatic ripple keyframes: slower fade, bigger spread */
+@keyframes ripple {
+  0% {
+    transform: scale(0.5);
+    opacity:   0.8;
+  }
+  40% {
+    opacity:   0.5;
+  }
+  80% {
+    opacity:   0.2;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity:   0;
+  }
+}
 
