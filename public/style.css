@@ -1,8 +1,8 @@
 /* -------------------------------
-   style.css (3 dramatic glowing ripples)
+   style.css (3 ripples, starting sooner)
    ------------------------------- */
 
-/* 1) Base & layout */
+/* 1) Base page & layout */
 html, body {
   margin: 0;
   height: 100%;
@@ -22,16 +22,13 @@ body {
 /* 2) honmoon-wrapper: circular viewport + ripple color var */
 .honmoon-wrapper {
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 200px; height: 200px;
   overflow: hidden;
   border-radius: 50%;
   margin: 20px 0;
-  /* base ripple color */
   --ripple-color: rgba(173,216,230,0.8);
 }
-
-/* 3) Swap to neon-pink ripples in weak state */
+/* 3) neon-pink ripples in weak state */
 .honmoon-wrapper.weak {
   --ripple-color: rgba(255,20,147,0.8);
 }
@@ -39,14 +36,12 @@ body {
 /* 4) Sphere container */
 #honmoon {
   position: relative;
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
 }
 
 /* 5) Honmoon sphere */
 .honmoon {
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
   border-radius: 50%;
   animation: pulseGlow 3s infinite ease-in-out;
   transition: background 0.6s, box-shadow 0.6s;
@@ -68,21 +63,20 @@ body {
     inset 0 0 40px rgba(255,192,203,0.2);
   animation:
     pulseGlow 1.5s ease-in-out infinite,
-    glitch    0.4s steps(2, end) infinite;
+    glitch    0.4s steps(2,end) infinite;
 }
 
-/* 7) Hide leftover rings/cracks */
+/* 7) hide old rings/cracks */
 .ring,
 .crack-overlay {
   display: none !important;
 }
 
-/* 8) THREE overlapping ripples via <div class="ripple"> */
+/* 8) THREE overlapping ripples, starting sooner */
 .honmoon-wrapper .ripple {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  border-radius: 50%;
+  position: absolute; top:0; left:0;
+  width:100%; height:100%;
+  border-radius:50%;
   border: 4px solid var(--ripple-color);
   box-shadow:
     0 0 12px var(--ripple-color),
@@ -93,10 +87,10 @@ body {
   pointer-events: none;
   animation: ripple 6s ease-out infinite both;
 }
-/* staggered starts */
-.honmoon-wrapper .ripple:nth-of-type(1) { animation-delay: 0s; }
-.honmoon-wrapper .ripple:nth-of-type(2) { animation-delay: 2s; }
-.honmoon-wrapper .ripple:nth-of-type(3) { animation-delay: 4s; }
+/* start them sooner: 0s, 1.5s, 3s */
+.honmoon-wrapper .ripple:nth-of-type(1) { animation-delay: 0s;   }
+.honmoon-wrapper .ripple:nth-of-type(2) { animation-delay: 1.5s; }
+.honmoon-wrapper .ripple:nth-of-type(3) { animation-delay: 3s;   }
 
 /* 9) Keyframes */
 @keyframes ripple {
@@ -107,17 +101,16 @@ body {
 }
 
 @keyframes pulseGlow {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.03); }
-  100% { transform: scale(1); }
+  0%,100% { transform: scale(1); }
+  50%     { transform: scale(1.03); }
 }
 
 @keyframes glitch {
   0%   { transform: none; }
-  20%  { transform: translate(-3px, 2px) skew(0.5deg); }
-  40%  { transform: translate(2px, -2px) skew(-0.5deg); }
-  60%  { transform: translate(-2px, 1px) skew(0.3deg); }
-  80%  { transform: translate(3px, -1px) skew(-0.3deg); }
+  20%  { transform: translate(-3px,2px) skew(0.5deg); }
+  40%  { transform: translate(2px,-2px) skew(-0.5deg); }
+  60%  { transform: translate(-2px,1px) skew(0.3deg); }
+  80%  { transform: translate(3px,-1px) skew(-0.3deg); }
   100% { transform: none; }
 }
 
