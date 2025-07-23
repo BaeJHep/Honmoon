@@ -1,8 +1,8 @@
-/* -------------------------------
-   style.css (complete with single ripple)
-   ------------------------------- */
+/* ---------------------------------------
+   style.css (with 3 ripples total)
+   --------------------------------------- */
 
-/* 1) Base page styles & prevent unwanted scroll */
+/* 1) Base & layout (same as before) */
 html, body {
   margin: 0;
   height: 100%;
@@ -16,122 +16,122 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
   padding-top: 20px;
 }
 
-/* 2) Wrapper for Honmoon (3D container) */
+/* 2) Wrapper for Honmoon (200×200 circular viewport) */
 .honmoon-wrapper {
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 200px; height: 200px;
   perspective: 800px;
-  transform-style: preserve-3d;
   overflow: hidden;
   border-radius: 50%;
   margin: 20px 0;
-  /* ripple color defaults to icy blue */
-  --ripple-color: rgba(173, 216, 230, 0.8);
+  /* define TWO ripple colors via CSS variables */
+  --ripple-color-1: rgba(173,216,230,0.8);
+  --ripple-color-2: rgba(173,216,230,0.5);
+  --ripple-color-3: rgba(173,216,230,0.3);
 }
 
-/* 3) Switch ripple color on "weak" state */
+/* 3) On weak → swap all three ripple vars to pink */
 .honmoon-wrapper.weak {
-  --ripple-color: rgba(255, 20, 147, 0.8);
+  --ripple-color-1: rgba(255,20,147,0.8);
+  --ripple-color-2: rgba(255,20,147,0.5);
+  --ripple-color-3: rgba(255,20,147,0.3);
 }
 
 /* 4) Sphere container */
 #honmoon {
   position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
+  width: 100%; height: 100%;
 }
 
-/* 5) Honmoon sphere base */
+/* 5) Sphere itself */
 .honmoon {
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
   border-radius: 50%;
-  transform-style: preserve-3d;
-  transform: translateZ(0);
   animation: pulseGlow 3s infinite ease-in-out;
   transition: background 0.6s, box-shadow 0.6s;
 }
 
-/* 6) STRONG state (icy blue) */
+/* 6) Strong / Weak styling (unchanged) */
 .honmoon.strong {
   background: radial-gradient(circle at 40% 40%, #8a2be2, #00ffff, #00008b);
-  box-shadow:
-    0 0 25px rgba(173, 216, 230, 0.8),
-    0 0 60px rgba(0, 255, 255, 0.6),
-    inset 0 0 30px rgba(255, 255, 255, 0.2);
+  box-shadow:0 0 25px rgba(173,216,230,0.8),0 0 60px rgba(0,255,255,0.6),inset 0 0 30px rgba(255,255,255,0.2);
 }
-
-/* 7) WEAK state (neon pink) + glitch */
 .honmoon.weak {
   background: radial-gradient(circle at 40% 40%, #ff1493, #ff69b4, #ff1493);
-  box-shadow:
-    0 0 30px rgba(255, 20, 147, 0.8),
-    0 0 70px rgba(255, 20, 147, 0.4),
-    inset 0 0 40px rgba(255, 192, 203, 0.2);
-  animation:
-    pulseGlow 1.5s ease-in-out infinite,
-    glitch    0.4s steps(2, end) infinite;
+  box-shadow:0 0 30px rgba(255,20,147,0.8),0 0 70px rgba(255,20,147,0.4),inset 0 0 40px rgba(255,192,203,0.2);
+  animation: pulseGlow 1.5s ease-in-out infinite, glitch 0.4s steps(2,end) infinite;
 }
 
-/* 8) Remove any leftover rings or cracks */
-.ring,
-.crack-overlay {
-  display: none !important;
-}
+/* 7) Hide old artifacts */
+.ring, .crack-overlay { display: none!important; }
 
-/* 9) Single ripple effect via ::after */
+
+/* ─────────────────────────────────────────────────
+   NEW: three ripples
+   ───────────────────────────────────────────────── */
+
+/* Ripple #1 via ::after */
 .honmoon::after {
   content: "";
+  position: absolute; top:0; left:0;
+  width:100%; height:100%;
+  border-radius:50%;
+  border:3px solid var(--ripple-color-1);
+  transform: scale(0.6);
+  opacity:0.8;
+  pointer-events:none;
+  animation: ripple 4s ease-out infinite;
+}
+
+/* Ripple #2 via extra .ripple element */
+.honmoon-wrapper .ripple:nth-of-type(1) {
+  border:3px solid var(--ripple-color-2);
+  animation: ripple 4s ease-out infinite 1.3s;
+}
+
+/* Ripple #3 via extra .ripple element */
+.honmoon-wrapper .ripple:nth-of-type(2) {
+  border:3px solid var(--ripple-color-3);
+  animation: ripple 4s ease-out infinite 2.6s;
+}
+
+/* Base .ripple style for both extras */
+.honmoon-wrapper .ripple {
   position: absolute;
   top: 0; left: 0;
-  width: 100%; height: 100%;
-  border-radius: 50%;
-  border: 3px solid var(--ripple-color);
-  transform: scale(0.6);
-  opacity: 0.8;
-  pointer-events: none;
-  animation: ripple 3s ease-out infinite;
+  width:100%; height:100%;
+  border-radius:50%;
+  opacity:0.7;
+  pointer-events:none;
 }
 
-/* ───────────────────────────────────────────────────────────
+/* ─────────────────────────────────────────────────
    Keyframes
-   ─────────────────────────────────────────────────────────── */
+   ───────────────────────────────────────────────── */
 
-/* ripple expands and fades */
+/* Expand/fade ripple */
 @keyframes ripple {
-  0% {
-    transform: scale(0.6);
-    opacity:   0.7;
-  }
-  50% {
-    opacity:   0.3;
-  }
-  100% {
-    transform: scale(1.4);
-    opacity:   0;
-  }
+  0%   { transform: scale(0.6); opacity: 0.8; }
+  50%  { opacity: 0.3; }
+  100% { transform: scale(1.4); opacity: 0; }
 }
 
-/* sphere pulse glow */
+/* Sphere pulse */
 @keyframes pulseGlow {
-  0%   { transform: translateZ(0) scale(1); }
-  50%  { transform: translateZ(0) scale(1.03); }
-  100% { transform: translateZ(0) scale(1); }
+  0%,100% { transform: scale(1); }
+  50%     { transform: scale(1.03); }
 }
 
-/* glitch shake (for weak state) */
+/* Glitch (weak only) */
 @keyframes glitch {
-  0%   { transform: translateZ(0) none; }
-  20%  { transform: translateZ(0) translate(-3px, 2px) skew(0.5deg); }
-  40%  { transform: translateZ(0) translate(2px, -2px) skew(-0.5deg); }
-  60%  { transform: translateZ(0) translate(-2px, 1px) skew(0.3deg); }
-  80%  { transform: translateZ(0) translate(3px, -1px) skew(-0.3deg); }
-  100% { transform: translateZ(0) none; }
+  0%   { transform: none; }
+  20%  { transform: translate(-3px,2px) skew(0.5deg); }
+  40%  { transform: translate(2px,-2px) skew(-0.5deg); }
+  60%  { transform: translate(-2px,1px) skew(0.3deg); }
+  80%  { transform: translate(3px,-1px) skew(-0.3deg); }
+  100% { transform: none; }
 }
 
