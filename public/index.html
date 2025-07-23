@@ -2,50 +2,52 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Honmoon Tracker v1.1</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Honmoon Tracker</title>
+  <!-- If you’re in CodePen, skip this and paste CSS below -->
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <h1>Honmoon Tracker</h1>
   <p>Honmoon Strength: <span id="status">Loading…</span></p>
 
-  <div id="honmoon" class="honmoon strong"></div>
+  <!-- honmoon-wrapper: sphere + two extra ripple divs -->
+  <div class="honmoon-wrapper strong">
+    <div id="honmoon" class="honmoon strong"></div>
+    <div class="ripple"></div>
+    <div class="ripple"></div>
+  </div>
 
   <div class="score-summary">
     <p><strong>Saja Boys Score:</strong> <span id="sajaScore">--</span></p>
-    <p><strong>Huntr/x Score:</strong> <span id="huntrixScore">--</span></p>
+    <p><strong>Huntr/x Score:</strong>  <span id="huntrixScore">--</span></p>
   </div>
 
   <table>
     <thead>
       <tr>
-        <th>Saja Boys Songs</th>
-        <th>Score</th>
-        <th>Huntr/x Songs</th>
-        <th>Score</th>
+        <th>Saja Boys Songs</th><th>Score</th>
+        <th>Huntr/x Songs</th><th>Score</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>Your Idol</td>
-        <td id="yourIdolScore">--</td>
-        <td>Golden</td>
-        <td id="goldenScore">--</td>
+        <td>Your Idol</td><td id="yourIdolScore">--</td>
+        <td>Golden</td>  <td id="goldenScore">--</td>
       </tr>
       <tr>
-        <td>Soda Pop</td>
-        <td id="sodaPopScore">--</td>
+        <td>Soda Pop</td><td id="sodaPopScore">--</td>
         <td>This Is What It Sounds Like</td>
         <td id="soundsScore">--</td>
       </tr>
     </tbody>
   </table>
 
-  <p style="font-size: 0.9em; color: gray;">
+  <p style="font-size:0.9em;color:gray;">
     * Spotify track popularity (0–100)
   </p>
 
   <script src="index.js" defer></script>
 </body>
 </html>
+
