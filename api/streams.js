@@ -1,3 +1,4 @@
+// streams.js
 import axios from 'axios';
 
 const clientId     = process.env.SPOTIFY_CLIENT_ID;
@@ -11,16 +12,18 @@ const TRACK_IDS = {
   sounds:   '5sBDrrtLGbV64QJnEqfjer'
 };
 
-let _token     = null;
-let _expiresAt = 0;
+let _token          = null;
+let _expiresAt      = 0;
 
-// Simple in-memory cache for scores (valid for 60s)
-let _cachedResult    = null;
-let _cacheExpiresAt  = 0;
-const CACHE_DURATION = 60 * 1000; // 1 minute
+// In-memory cache for scores
+let _cachedResult   = null;
+let _cacheExpiresAt = 0;
+const CACHE_DURATION = 60 * 1000; // 60 seconds
 
 async function getToken() {
-  if (_token && Date.now() < _expiresAt) return _token;
+  if (_token && Date.now() < _expiresAt) {
+    return _token;
+  }
 
   const resp = await axios.post(
     'https://accounts.spotify.com/api/token',
@@ -28,8 +31,7 @@ async function getToken() {
     {
       headers: {
         Authorization:
-          'Basic ' +
-          Buffer.from(`${clientId}:${clientSecret}`).toString('base64'),
+          'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64'),
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     }
@@ -49,9 +51,9 @@ async function fetchScores() {
   const token   = await getToken();
   const headers = { Authorization: `Bearer ${token}` };
 
-  // Batch request for all tracks at once
-  const ids   = Object.values(TRACK_IDS).join(',');
-  const resp  = await axios.get(
+  // Batch all track IDs in one request
+  const ids  = Object.values(TRACK_IDS).join(',');
+  const resp = await axios.get(
     `https://api.spotify.com/v1/tracks?ids=${ids}`,
     { headers }
   );
@@ -64,11 +66,11 @@ async function fetchScores() {
     sounds:   tracks.find(t => t.id === TRACK_IDS.sounds)?.popularity   || 0
   };
 
-  const sajaAvg  = Math.round((scores.sodaPop  + scores.yourIdol) / 2);
+  const sajaAvg    = Math.round((scores.sodaPop + scores.yourIdol) / 2);
   const huntrixAvg = Math.round((scores.golden + scores.sounds)   / 2);
 
   const result = { scores, sajaBoysScore: sajaAvg, huntrixScore: huntrixAvg };
-  
+
   // Cache it
   _cachedResult   = result;
   _cacheExpiresAt = Date.now() + CACHE_DURATION;
@@ -78,13 +80,21 @@ async function fetchScores() {
 
 export default async function handler(req, res) {
   try {
+    // Try fetching fresh data
     const data = await fetchScores();
     return res.status(200).json(data);
   } catch (err) {
     console.error('Spotify API error:', err.response?.data || err.message);
+
+    if (_cachedResult) {
+      // On any error (rate limit, network, etc.), return cached data
+      console.warn('Returning cached result due to Spotify error');
+      return res.status(200).json(_cachedResult);
+    }
+
+    // If there is no cache yet, propagate the error
     return res.status(500).json({ error: 'Spotify API error' });
   }
 }
-
 
 
