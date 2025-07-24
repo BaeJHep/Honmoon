@@ -7,12 +7,17 @@ const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
 const TRACK_IDS = {
   sodaPop:  '1CPZ5BxNNd0n0nF4Orb9JS',
   yourIdol: '1I37Zz2g3hk9eWxaNkj031',
-  golden:   '1CPZ5BxNNd0n0nF4Orb9JS',           
-  sounds:   '5sBDrrtLGbV64QJnEqfjer'           
+  golden:   '1CPZ5BxNNd0n0nF4Orb9JS',
+  sounds:   '5sBDrrtLGbV64QJnEqfjer'
 };
 
 let _token     = null;
 let _expiresAt = 0;
+
+// Simple in-memory cache for scores (valid for 60s)
+let _cachedResult    = null;
+let _cacheExpiresAt  = 0;
+const CACHE_DURATION = 60 * 1000; // 1 minute
 
 async function getToken() {
   if (_token && Date.now() < _expiresAt) return _token;
@@ -35,41 +40,51 @@ async function getToken() {
   return _token;
 }
 
+async function fetchScores() {
+  // Return cached if still valid
+  if (_cachedResult && Date.now() < _cacheExpiresAt) {
+    return _cachedResult;
+  }
+
+  const token   = await getToken();
+  const headers = { Authorization: `Bearer ${token}` };
+
+  // Batch request for all tracks at once
+  const ids   = Object.values(TRACK_IDS).join(',');
+  const resp  = await axios.get(
+    `https://api.spotify.com/v1/tracks?ids=${ids}`,
+    { headers }
+  );
+
+  const tracks = resp.data.tracks;
+  const scores = {
+    sodaPop:  tracks.find(t => t.id === TRACK_IDS.sodaPop)?.popularity || 0,
+    yourIdol: tracks.find(t => t.id === TRACK_IDS.yourIdol)?.popularity || 0,
+    golden:   tracks.find(t => t.id === TRACK_IDS.golden)?.popularity   || 0,
+    sounds:   tracks.find(t => t.id === TRACK_IDS.sounds)?.popularity   || 0
+  };
+
+  const sajaAvg  = Math.round((scores.sodaPop  + scores.yourIdol) / 2);
+  const huntrixAvg = Math.round((scores.golden + scores.sounds)   / 2);
+
+  const result = { scores, sajaBoysScore: sajaAvg, huntrixScore: huntrixAvg };
+  
+  // Cache it
+  _cachedResult   = result;
+  _cacheExpiresAt = Date.now() + CACHE_DURATION;
+
+  return result;
+}
+
 export default async function handler(req, res) {
   try {
-    const token   = await getToken();
-    const headers = { Authorization: `Bearer ${token}` };
-
-    // fetch all four tracks in parallel
-    const [soda, idol, gold, sounds] = await Promise.all([
-      axios.get(`https://api.spotify.com/v1/tracks/${TRACK_IDS.sodaPop}`,     { headers }),
-      axios.get(`https://api.spotify.com/v1/tracks/${TRACK_IDS.yourIdol}`,    { headers }),
-      axios.get(`https://api.spotify.com/v1/tracks/${TRACK_IDS.golden}`,      { headers }),
-      axios.get(`https://api.spotify.com/v1/tracks/${TRACK_IDS.sounds}`,      { headers })
-    ]);
-
-    const popScore = (t) => t.data.popularity || 0;
-
-    const scores = {
-      sodaPop:  popScore(soda),
-      yourIdol: popScore(idol),
-      golden:   popScore(gold),
-      sounds:   popScore(sounds)
-    };
-
-    const sajaAvg  = Math.round((scores.sodaPop  + scores.yourIdol) / 2);
-    const huntrixAvg = Math.round((scores.golden + scores.sounds)   / 2);
-
-    return res.status(200).json({
-      scores,
-      sajaBoysScore:  sajaAvg,
-      huntrixScore:   huntrixAvg,
-      trending:       sajaAvg > huntrixAvg ? 'Saja Boys' : 'Huntr/x'
-    });
+    const data = await fetchScores();
+    return res.status(200).json(data);
   } catch (err) {
     console.error('Spotify API error:', err.response?.data || err.message);
     return res.status(500).json({ error: 'Spotify API error' });
   }
 }
+
 
 
