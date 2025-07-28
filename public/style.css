@@ -33,11 +33,24 @@ body {
   --ripple-color-3: rgba(173,216,230,0.3);
 }
 
-/* 3) Swap all three ripple colors in the weak state */
+/* 3) Pink shimmer ripples in weak state */
 .honmoon-wrapper.weak {
   --ripple-color-1: rgba(255,20,147,0.8);
   --ripple-color-2: rgba(255,20,147,0.5);
   --ripple-color-3: rgba(255,20,147,0.3);
+}
+
+/* 🌌 Pulsing pink aura behind Honmoon */
+.honmoon-wrapper.weak::before {
+  content: "";
+  position: absolute;
+  top: -30%; left: -30%;
+  width: 160%;
+  height: 160%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,20,147,0.3), transparent 70%);
+  z-index: 0;
+  animation: auraPulse 6s ease-in-out infinite;
 }
 
 /* 4) Sphere container */
@@ -56,7 +69,6 @@ body {
   transition: background 0.6s, box-shadow 0.6s;
 }
 
-/* 6) Strong vs Weak styling */
 .honmoon.strong {
   background: radial-gradient(circle at 40% 40%, #8a2be2, #00ffff, #00008b);
   box-shadow:
@@ -65,79 +77,85 @@ body {
     inset 0 0 30px rgba(255,255,255,0.2);
 }
 .honmoon.weak {
-  background: radial-gradient(circle at 40% 40%, #ff1493, #ff69b4, #ff1493);
+  background: radial-gradient(circle at 40% 40%, #ff1493, #ff69b4, #8b008b);
   box-shadow:
-    0 0 30px rgba(255,20,147,0.8),
-    0 0 70px rgba(255,20,147,0.4),
-    inset 0 0 40px rgba(255,192,203,0.2);
+    0 0 40px rgba(255,20,147,0.9),
+    0 0 80px rgba(255,105,180,0.5),
+    inset 0 0 50px rgba(255,182,193,0.3);
   animation:
     pulseGlow 1.5s ease-in-out infinite,
-    glitch    0.4s steps(2,end) infinite;
+    glitch 0.4s steps(2,end) infinite;
 }
 
-/* 7) Remove any old rings/cracks */
+/* 6) Remove any old rings/cracks */
 .ring,
 .crack-overlay {
   display: none !important;
 }
 
-/* ──────────────────────────────────────────
-   8) THREE ripples
-   ────────────────────────────────────────── */
-
-/* #1 via ::after on .honmoon */
-.honmoon::after {
-  content: "";
-  position: absolute; top: 0; left: 0;
+/* 7) THREE ripple rings with shimmer & bursts */
+.honmoon-wrapper .ripple {
+  position: absolute;
+  top: 0; left: 0;
   width: 100%; height: 100%;
   border-radius: 50%;
-  border: 3px solid var(--ripple-color-1);
-  transform: scale(0.6);
-  opacity: 0.8;
   pointer-events: none;
-  animation: ripple 4s ease-out infinite 0s;
+  animation: ripple 6s ease-out infinite;
 }
 
-/* #2 via first .ripple child */
+/* Ring 1 */
 .honmoon-wrapper .ripple:nth-of-type(1) {
-  position: absolute; top: 0; left: 0;
-  width: 100%; height: 100%;
-  border-radius: 50%;
-  border: 3px solid var(--ripple-color-2);
-  opacity: 0.7;
-  pointer-events: none;
-  animation: ripple 4s ease-out infinite 1.3s;
+  border: 4px solid var(--ripple-color-1);
+  box-shadow:
+    0 0 8px var(--ripple-color-1),
+    0 0 16px var(--ripple-color-1),
+    0 0 32px var(--ripple-color-1);
+  animation-delay: 0s;
 }
 
-/* #3 via second .ripple child */
+/* Ring 2 */
 .honmoon-wrapper .ripple:nth-of-type(2) {
-  position: absolute; top: 0; left: 0;
-  width: 100%; height: 100%;
-  border-radius: 50%;
-  border: 3px solid var(--ripple-color-3);
-  opacity: 0.7;
-  pointer-events: none;
-  animation: ripple 4s ease-out infinite 2.6s;
+  border: 4px solid var(--ripple-color-2);
+  box-shadow:
+    0 0 8px var(--ripple-color-2),
+    0 0 16px var(--ripple-color-2),
+    0 0 32px var(--ripple-color-2);
+  animation-delay: 2s;
+}
+
+/* Ring 3 */
+.honmoon-wrapper .ripple:nth-of-type(3) {
+  border: 4px solid var(--ripple-color-3);
+  box-shadow:
+    0 0 8px var(--ripple-color-3),
+    0 0 16px var(--ripple-color-3),
+    0 0 32px var(--ripple-color-3);
+  animation-delay: 4s;
+}
+
+/* 👾 Special ripple animation stack for weak state */
+.honmoon-wrapper.weak .ripple {
+  animation-name: ripple, shimmer, glowBurst;
+  animation-duration: 6s, 3s, 4s;
+  animation-timing-function: ease-out, ease-in-out, ease-in-out;
+  animation-iteration-count: infinite;
 }
 
 /* ──────────────────────────────────────────
    Keyframes
    ────────────────────────────────────────── */
-
-/* Expanding/fading ripple */
 @keyframes ripple {
-  0%   { transform: scale(0.6); opacity: 0.8; }
-  50%  { opacity: 0.3; }
-  100% { transform: scale(1.4); opacity: 0; }
+  0%   { transform: scale(0.5); opacity: 0.8; }
+  40%  { opacity: 0.5; }
+  80%  { opacity: 0.2; }
+  100% { transform: scale(1.6); opacity: 0; }
 }
 
-/* Sphere pulse */
 @keyframes pulseGlow {
   0%,100% { transform: scale(1); }
   50%     { transform: scale(1.03); }
 }
 
-/* Glitch shake for weak state */
 @keyframes glitch {
   0%   { transform: none; }
   20%  { transform: translate(-3px,2px) skew(0.5deg); }
@@ -146,53 +164,22 @@ body {
   80%  { transform: translate(3px,-1px) skew(-0.3deg); }
   100% { transform: none; }
 }
-/* ────────────────────────────────────────
-   Dramatic Glowing Ripples (Replace old)
-   ──────────────────────────────────────── */
 
-/* #1 via ::after on .honmoon */
-.honmoon::after {
-  border: 4px solid var(--ripple-color-1);
-  box-shadow:
-    0 0 8px var(--ripple-color-1),
-    0 0 16px var(--ripple-color-1),
-    0 0 32px var(--ripple-color-1);
-  animation: ripple 6s ease-out infinite 0s;
+@keyframes shimmer {
+  0%, 100% { filter: hue-rotate(0deg); }
+  50%      { filter: hue-rotate(30deg); }
 }
 
-/* #2 via first .ripple child */
-.honmoon-wrapper .ripple:nth-of-type(1) {
-  border: 4px solid var(--ripple-color-2);
-  box-shadow:
-    0 0 8px var(--ripple-color-2),
-    0 0 16px var(--ripple-color-2),
-    0 0 32px var(--ripple-color-2);
-  animation: ripple 6s ease-out infinite 2s;
+@keyframes glowBurst {
+  0%, 100% { box-shadow: 0 0 20px rgba(255,20,147,0.4); }
+  50%     { box-shadow: 0 0 50px rgba(255,20,147,0.8); }
 }
 
-/* #3 via second .ripple child */
-.honmoon-wrapper .ripple:nth-of-type(2) {
-  border: 4px solid var(--ripple-color-3);
-  box-shadow:
-    0 0 8px var(--ripple-color-3),
-    0 0 16px var(--ripple-color-3),
-    0 0 32px var(--ripple-color-3);
-  animation: ripple 6s ease-out infinite 4s;
+@keyframes auraPulse {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50%     { transform: scale(1.05); opacity: 0.7; }
 }
 
-/* Dramatic ripple keyframes: slower fade, bigger spread */
-@keyframes ripple {
-  0% {
-    transform: scale(0.5);
-    opacity:   0.8;
-  }
-  40% {
-    opacity:   0.5;
-  }
-  80% {
-    opacity:   0.2;
-  }
-  100% {
     transform: scale(1.6);
     opacity:   0;
   }
