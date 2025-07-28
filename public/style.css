@@ -56,14 +56,14 @@ body {
     inset 0 0 30px rgba(255,255,255,0.2);
 }
 .honmoon.weak {
-  background: radial-gradient(circle at 40% 40%, #ff1493, #ff69b4, #ff1493);
+  background: radial-gradient(circle at 40% 40%, #ff1493, #ff69b4, #8b008b);
   box-shadow:
-    0 0 30px rgba(255,20,147,0.8),
-    0 0 70px rgba(255,20,147,0.4),
-    inset 0 0 40px rgba(255,192,203,0.2);
+    0 0 40px rgba(255,20,147,0.9),
+    0 0 80px rgba(255,105,180,0.5),
+    inset 0 0 50px rgba(255,182,193,0.3);
   animation:
     pulseGlow 1.5s ease-in-out infinite,
-    glitch    0.4s steps(2,end) infinite;
+    glitch 0.4s steps(2,end) infinite;
 }
 
 /* 7) hide old rings/cracks */
