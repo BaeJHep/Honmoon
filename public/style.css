@@ -113,4 +113,41 @@ body {
   80%  { transform: translate(3px,-1px) skew(-0.3deg); }
   100% { transform: none; }
 }
+/* ✨ Neon shimmer on ripples */
+@keyframes shimmer {
+  0%, 100% { filter: hue-rotate(0deg); }
+  50%      { filter: hue-rotate(30deg); }
+}
+
+/* 💥 Glowing burst pulse */
+@keyframes glowBurst {
+  0%, 100% { box-shadow: 0 0 20px rgba(255,20,147,0.4); }
+  50%     { box-shadow: 0 0 50px rgba(255,20,147,0.8); }
+}
+
+/* 🌌 Pulsing pink aura behind Honmoon */
+.honmoon-wrapper.weak::before {
+  content: "";
+  position: absolute;
+  top: -30%; left: -30%;
+  width: 160%;
+  height: 160%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,20,147,0.3), transparent 70%);
+  z-index: 0;
+  animation: auraPulse 6s ease-in-out infinite;
+}
+
+@keyframes auraPulse {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50%     { transform: scale(1.05); opacity: 0.7; }
+}
+
+/* 👾 Slight glitchy ring breaks (weak only) */
+.honmoon-wrapper.weak .ripple {
+  animation-name: ripple, shimmer, glowBurst;
+  animation-duration: 6s, 3s, 4s;
+  animation-timing-function: ease-out, ease-in-out, ease-in-out;
+  animation-iteration-count: infinite;
+}
 
