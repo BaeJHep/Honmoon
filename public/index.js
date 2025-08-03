@@ -19,86 +19,108 @@ const riftSVG          = document.querySelector('.rift-svg');
 const glitterParticles = document.querySelector('.glitter-particles');
 const sajaCountEl      = document.getElementById('saja-count');
 const huntrixCountEl   = document.getElementById('huntrix-count');
+const retractBtn       = document.getElementById('redact-vote');
 
 // 3) Local vote state
-let myVote = null;        // 'saja' | 'huntrix' | null
-let votes  = { saja: 0, huntrix: 0 };
+let myVote = null; // 'saja' | 'huntrix' | null
 
-// 4) Helper: call our new API
+// 4) Helper: call our new API with error handling
 async function callVoteAPI(method, data) {
   const user = auth.currentUser;
   if (!user) throw new Error("Not signed in");
   const token = await user.getIdToken();
+
   const res = await fetch('/api/vote', {
     method,
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + token
+      'Authorization': 'Bearer ' + token,
     },
-    body: data ? JSON.stringify(data) : undefined
+    body: data ? JSON.stringify(data) : undefined,
   });
-  return res.json();
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`API error ${res.status}: ${text}`);
+  }
+
+  try {
+    return await res.json();
+  } catch (e) {
+    throw new Error(`Invalid JSON response: ${e.message}`);
+  }
 }
 
-// 5) Update the UI based on myVote & (optionally) global counts
-function updateFanmoon() {
+// 5) Update UI: counts, retract button, and orb classes
+function updateUI() {
+  // vote counts (1 if it's your vote, else 0)
+  sajaCountEl.textContent    = myVote === 'saja'    ? '1' : '0';
+  huntrixCountEl.textContent = myVote === 'huntrix' ? '1' : '0';
+
+  // show/hide the retract button
+  retractBtn.style.display = myVote ? '' : 'none';
+
+  // orb visuals (you can keep your split/particle logic here if you want)
   fanmoon.classList.remove('saja', 'huntrix', 'split');
   if (riftSVG)          riftSVG.style.display = 'none';
   if (glitter)          glitter.style.display = 'none';
   if (glitterParticles) glitterParticles.innerHTML = '';
 
-  // simple “split” logic
-  const diff = Math.abs(votes.saja - votes.huntrix);
-  if (diff <= 10 && votes.saja !== votes.huntrix) {
-    fanmoon.classList.add('split');
-    if (riftSVG) startBurnParticles(), riftSVG.style.display = 'block';
-    if (glitter) glitter.style.display = '';
-  }
-  else if (votes.huntrix > votes.saja) {
-    fanmoon.classList.add('huntrix');
-    if (glitter) glitter.style.display = '';
-  } else {
+  if (myVote === 'saja') {
     fanmoon.classList.add('saja');
+  } else if (myVote === 'huntrix') {
+    fanmoon.classList.add('huntrix');
   }
-
-  // show *your* vote count as 1 or 0
-  sajaCountEl.textContent    = myVote === 'saja'    ? '1' : '0';
-  huntrixCountEl.textContent = myVote === 'huntrix' ? '1' : '0';
+  // if you still want “split” behavior, you can re-introduce that logic here
 }
-
-// (If you still want global tallies, you’d need another API like `/api/voteCount` here.)
 
 // 6) Sign in & wire up
 signInAnonymously(auth)
   .then(async () => {
-    // 6a) load *your* vote
-    const { vote } = await callVoteAPI('GET');
-    myVote = vote;
-    updateFanmoon();
+    // 6a) Load your existing vote
+    try {
+      const { vote } = await callVoteAPI('GET');
+      myVote = vote; 
+    } catch (e) {
+      console.error('Failed to load vote:', e);
+    }
+    updateUI();
 
-    // 6b) button handlers
+    // 6b) Cast a new vote
     document.getElementById('vote-saja')
       .addEventListener('click', async () => {
-        await callVoteAPI('POST', { choice: 'saja' });
-        myVote = 'saja';
-        updateFanmoon();
+        try {
+          await callVoteAPI('POST', { choice: 'saja' });
+          myVote = 'saja';
+          updateUI();
+        } catch (e) {
+          console.error('Vote failed:', e);
+        }
       });
 
     document.getElementById('vote-huntrix')
       .addEventListener('click', async () => {
-        await callVoteAPI('POST', { choice: 'huntrix' });
-        myVote = 'huntrix';
-        updateFanmoon();
+        try {
+          await callVoteAPI('POST', { choice: 'huntrix' });
+          myVote = 'huntrix';
+          updateUI();
+        } catch (e) {
+          console.error('Vote failed:', e);
+        }
       });
 
-    document.getElementById('redact-vote')
-      .addEventListener('click', async () => {
+    // 6c) Retract your vote
+    retractBtn.addEventListener('click', async () => {
+      try {
         await callVoteAPI('DELETE');
         myVote = null;
-        updateFanmoon();
-      });
+        updateUI();
+      } catch (e) {
+        console.error('Retract failed:', e);
+      }
+    });
   })
   .catch(console.error);
 
-// ─────────── Initial Render ───────────
-updateFanmoon();
+// 7) Initial render (in case signIn is instant)
+updateUI();
