@@ -163,10 +163,10 @@
     measurementId: "G-KDLM6N65DE"
   };
 
-    const app  = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db   = getDatabase(app);
-
+// Initialize
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db   = firebase.database();
     // Elements
     const fan = document.getElementById('fanmoon');
     const btnS = document.getElementById('vote-saja');
