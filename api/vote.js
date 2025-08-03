@@ -1,5 +1,5 @@
 // api/vote.js
-import { db, auth, FieldValue } from "./firebaseAdmin";
+import { db, auth, FieldValue } from "./firebaseAdmin.js";
 
 export default async function handler(req, res) {
   try {
