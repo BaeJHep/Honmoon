@@ -10,21 +10,26 @@
 <body>
   <h1>The FanMoon</h1>
 
-  <!-- THE ORB -->
-  <div id="splitmoon-container">
-    <!-- Base orb SVG -->
-    <svg id="splitmoon-svg" viewBox="0 0 200 200">
-      <circle cx="100" cy="100" r="100" fill="#000" />
+  <!-- FANMOON WRAPPER: for DB integration and visual updates -->
+  <div id="fanmoon" class="huntrix-win">
+    <!-- CODEPEN ORB CONTAINER (UI rendering) -->
+    <div id="splitmoon-container" style="position:relative;">
+      <!-- dynamic SVG and overlays will be injected by codepen script or index.js -->
+    </div>
+
+    <!-- Rift overlay for split state (hidden by default) -->
+    <svg class="rift-svg" style="display:none; position:absolute; inset:0; z-index:5; pointer-events:none;" viewBox="0 0 240 240">
+      <polygon id="riftV" points="110,0 130,0 120,230" fill="#111" />
     </svg>
 
-    <!-- Huntrix animated overlays -->
+    <!-- Static Huntrix overlays -->
     <div class="huntrix-overlay"></div>
     <div class="huntrix-glitter">
       <span></span><span></span><span></span><span></span><span></span>
     </div>
     <div class="huntrix-highlight"></div>
 
-    <!-- Rift crack particles -->
+    <!-- Particle container for rift particles -->
     <div class="particles"></div>
   </div>
 
@@ -49,7 +54,10 @@
 
   <!-- Firebase + vote logic -->
   <script type="module" src="./index.js"></script>
+
+  <!-- Original CodePen Script: UI rendering (optional, you may integrate into index.js) -->
+  <script>
+    // CodePen renderMoon and particle logic goes here if not migrating fully to index.js
+  </script>
 </body>
 </html>
-
-
