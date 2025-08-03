@@ -14,24 +14,26 @@ body {
 /* ─────────── Split‐Moon Container ─────────── */
 #splitmoon-container {
   position: relative;
-  width: 200px;              /* shrink from 240px to 200px */
-  height: 200px;             /* match width for a perfect circle */
-  margin: 0 auto 18px;
+  width: 240px;       /* bump up from 200 */
+  height: 240px;      /* match width */
+  margin: 0 auto 24px;
   perspective: 900px;
-  transform: scale(0.9);     /* optional fine-tuning */
+  transform: scale(1); /* you can tweak down to .95 if you like */
   transform-origin: center;
 }
 
+/* This drop‐shadow is the golden halo you saw in CodePen */
 #splitmoon-svg {
-  width: 100%;               /* constrain to container */
+  width: 100%;
   height: auto;
   display: block;
   margin: 0 auto;
   background: transparent;
   overflow: visible;
   z-index: 1;
-  filter: drop-shadow(0 0 48px #ffb6eeb0)
-          drop-shadow(0 0 24px #bbfff7a0);
+  filter:
+    inset 0 10px 30px rgba(0,0,0,0.7),
+    0 0 60px rgba(255,215,0,0.4);
 }
 
 /* ─────────── Huntr/x Overlays ─────────── */
