@@ -4,16 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The FanMoon</title>
-  <!-- Link out to your external stylesheet -->
+  <!-- your external CSS -->
   <link rel="stylesheet" href="style.css" />
-  <!-- SVG filter definitions for noise (this stays here) -->
-  <svg id="noise-defs" style="position:absolute;width:0;height:0;">
-    <filter id="pastelNoise">
-      <feTurbulence type="fractalNoise" stitchTiles="stitch"/>
-      <feColorMatrix type="matrix"/>
-      <feComposite in2="SourceGraphic" operator="over"/>
-    </filter>
-  </svg>
 </head>
 
 <body>
@@ -26,7 +18,14 @@
   <div class="vote-ui">
     <button id="vote-saja"    class="vote-btn saja">Vote Saja Boys</button>
     <button id="vote-huntrix" class="vote-btn huntrix">Vote Huntr/x</button>
-    <button id="redact-vote"  class="vote-btn">Retract Vote</button>
+    <!-- hidden until you’ve cast a vote -->
+    <button
+      id="redact-vote"
+      class="vote-btn"
+      style="display: none;"
+    >
+      Retract Vote
+    </button>
   </div>
 
   <!-- COUNTERS -->
@@ -35,8 +34,18 @@
     <div class="huntrix">Huntr/x:   <span id="huntrix-count">0</span></div>
   </div>
 
-  <!-- Initialize Firebase + vote logic -->
-  <script type="module" src="index.js"></script>
+  <!-- SVG Noise Filter (needed for your background noise) -->
+  <svg id="noise-defs" style="position:absolute;width:0;height:0;">
+    <filter id="pastelNoise">
+      <feTurbulence type="fractalNoise" stitchTiles="stitch"/>
+      <feColorMatrix type="matrix"/>
+      <feComposite in2="SourceGraphic" operator="over"/>
+    </filter>
+  </svg>
+
+  <!-- Firebase + vote logic -->
+  <script type="module" src="./index.js"></script>
 </body>
 </html>
+
 
