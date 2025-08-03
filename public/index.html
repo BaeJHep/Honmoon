@@ -4,7 +4,6 @@
   <!-- 1) Load the Firebase SDKs first -->
   <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js"></script>
   </head>head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -146,61 +145,71 @@
   </div>
 
   <!-- ─────────── Firebase + Vote Logic ─────────── -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+ <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
-    // Your config
-    const firebaseConfig = {
-    apiKey: "AIzaSyAAjM5tVDJ5ynaoN-Ju3TgbsfXm0lBEbVI",
-    authDomain: "honmoon-kpop.firebaseapp.com",
-    databaseURL: "https://honmoon-kpop-default-rtdb.firebaseio.com",
-    projectId: "honmoon-kpop",
-    storageBucket: "honmoon-kpop.firebasestorage.app",
-    messagingSenderId: "1009037444916",
-    appId: "1:1009037444916:web:a54fb2bed4dd8ff21f8761",
-    measurementId: "G-KDLM6N65DE"
+  // 1) Init Firebase
+  const firebaseConfig = {
+    apiKey: "YOUR_FIREBASE_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
   };
+  initializeApp(firebaseConfig);
+  const auth = getAuth();
 
-// Initialize
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db   = firebase.database();
-    // Elements
-    const fan = document.getElementById('fanmoon');
-    const btnS = document.getElementById('vote-saja');
-    const btnH = document.getElementById('vote-huntrix');
-    const elS  = document.getElementById('saja-count');
-    const elH  = document.getElementById('huntrix-count');
+  // 2) Helpers to call your new API
+  async function callVoteAPI(method, body) {
+    const user = auth.currentUser;
+    if (!user) throw new Error("Not signed in");
+    const token = await user.getIdToken();
+    const res = await fetch("/api/vote", {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token,
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    return res.json();
+  }
 
-    let votes = { saja:0, huntrix:0 };
+  // 3) UI update functions
+  const fan = document.getElementById("fanmoon");
+  const btnS = document.getElementById("vote-saja");
+  const btnH = document.getElementById("vote-huntrix");
+  const elS  = document.getElementById("saja-count");
+  const elH  = document.getElementById("huntrix-count");
 
-    function updateFanmoon() {
-      fan.className = 'fanmoon';
-      if (votes.saja > votes.huntrix) fan.classList.add('saja-win');
-      else fan.classList.add('huntrix-win');
-      elS.textContent = votes.saja;
-      elH.textContent = votes.huntrix;
-    }
+  function refreshDisplay(vote) {
+    // highlight orb
+    fan.className = "";
+    if (vote === "saja") fan.classList.add("saja-win");
+    else if (vote === "huntrix") fan.classList.add("huntrix-win");
 
-    function castVote(band) {
-      set(ref(db, `votes/${auth.currentUser.uid}`), band);
-    }
+    // show just the user’s vote count (we’ll handle global counts later)
+    elS.textContent = vote === "saja"    ? "1" : "0";
+    elH.textContent = vote === "huntrix" ? "1" : "0";
+  }
 
-    signInAnonymously(auth).then(()=>{
-      const uid = auth.currentUser.uid;
-      onValue(ref(db,'counts'),snap=>{
-        const c = snap.val()||{};
-        votes.saja = c.saja||0;
-        votes.huntrix = c.huntrix||0;
-        updateFanmoon();
-      });
-      btnS.onclick = ()=>castVote('saja');
-      btnH.onclick = ()=>castVote('huntrix');
-    }).catch(console.error);
-  </script>
-</body>
-</html>
+  // 4) Sign in & load initial vote
+  signInAnonymously(auth)
+    .then(async () => {
+      // fetch the user’s current vote
+      const { vote } = await callVoteAPI("GET");
+      refreshDisplay(vote);
+
+      // wire up buttons
+      btnS.onclick = async () => {
+        await callVoteAPI("POST", { choice: "saja" });
+        refreshDisplay("saja");
+      };
+      btnH.onclick = async () => {
+        await callVoteAPI("POST", { choice: "huntrix" });
+        refreshDisplay("huntrix");
+      };
+    })
+    .catch(console.error);
+</script>
 
 
