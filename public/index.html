@@ -343,6 +343,92 @@
             .onclick = () => castVote(null);
   }).catch(err => console.error(err));
 </script>
+    <script type="module">
+  // ─────────── Imports & Firebase Init ───────────
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+  import {
+    getDatabase,
+    ref,
+    onValue,
+    set
+  } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+  // ─────────── Your Firebase config ───────────
+  const firebaseConfig = {
+    apiKey: "AIzaSyAAjM5tVDJ5ynaoN-Ju3TgbsfXm0lBEbVI",
+    authDomain: "honmoon-kpop.firebaseapp.com",
+    databaseURL: "https://honmoon-kpop-default-rtdb.firebaseio.com",
+    projectId: "honmoon-kpop",
+    storageBucket: "honmoon-kpop.appspot.com",
+    messagingSenderId: "1009037444916",
+    appId: "1:1009037444916:web:a54fb2bed4dd8ff21f8761",
+    measurementId: "G-KDLM6N65DE"
+  };
+
+  // ─────────── Initialize Firebase ───────────
+  const app  = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getDatabase(app);
+
+  // ─────────── Cached DOM References ───────────
+  const fanmoon         = document.getElementById('fanmoon');
+  const voteSajaBtn     = document.getElementById('voteSaja');
+  const voteHuntrixBtn  = document.getElementById('voteHuntrix');
+  const sajaCountEl     = document.getElementById('sajaCount');
+  const huntrixCountEl  = document.getElementById('huntrixCount');
+
+  // ─────────── Local State ───────────
+  let votes = { saja: 0, huntrix: 0 };
+
+  // ─────────── Utility: Update Vote Counters & Fanmoon State ───────────
+  function updateFanmoon() {
+    // reset classes
+    fanmoon.className = 'fanmoon';
+    const diff = Math.abs(votes.saja - votes.huntrix);
+
+    // determine mode
+    if (diff <= 10 && votes.saja !== votes.huntrix) {
+      fanmoon.classList.add('split');
+    } else if (votes.saja > votes.huntrix) {
+      fanmoon.classList.add('saja-win');
+    } else {
+      fanmoon.classList.add('huntrix-win');
+    }
+
+    // update on-screen counts
+    sajaCountEl.textContent    = votes.saja;
+    huntrixCountEl.textContent = votes.huntrix;
+  }
+
+  // ─────────── Vote Cast Helper ───────────
+  function castVote(band) {
+    // writes or clears the user's single vote
+    set(ref(db, `votes/${auth.currentUser.uid}`), band);
+  }
+
+  // ─────────── Wire up Firebase Auth & Listeners ───────────
+  signInAnonymously(auth)
+    .then(() => {
+      const uid = auth.currentUser.uid;
+
+      // 1) Listen for global tallies
+      onValue(ref(db, 'counts'), snap => {
+        const c = snap.val() || {};
+        votes.saja    = c.saja    || 0;
+        votes.huntrix = c.huntrix || 0;
+        updateFanmoon();
+      });
+
+      // 2) Attach vote buttons
+      voteSajaBtn.onclick    = () => castVote('saja');
+      voteHuntrixBtn.onclick = () => castVote('huntrix');
+    })
+    .catch(console.error);
+
+  // ─────────── Initial Render ───────────
+  updateFanmoon();
+</script>
 
 </body>
 </html>
