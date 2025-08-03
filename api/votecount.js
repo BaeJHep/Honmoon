@@ -1,4 +1,4 @@
-// ===== pages/api/voteCount.js =====
+// ===== api/voteCount.js =====
 // Serverless endpoint to return global vote tallies
 import { db } from "./firebaseAdmin.js";
 
