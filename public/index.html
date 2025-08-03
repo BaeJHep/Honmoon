@@ -2,52 +2,348 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Honmoon Tracker</title>
-  <!-- If you’re in CodePen, skip this and paste CSS below -->
-  <link rel="stylesheet" href="style.css"/>
+  <meta name="viewport" content="width=320, initial-scale=1.0"/>
+  <title>The FanMoon</title>
+  <link rel="stylesheet" href="fanmoon.css"/>
 </head>
 <body>
-  <h1>Honmoon Tracker</h1>
-  <p>Honmoon Strength: <span id="status">Loading…</span></p>
-
-  <!-- honmoon-wrapper: sphere + two extra ripple divs -->
-  <div class="honmoon-wrapper strong">
-    <div id="honmoon" class="honmoon strong"></div>
-    <div class="ripple"></div>
-    <div class="ripple"></div>
+  <h1>The FanMoon</h1>
+  <div id="splitmoon-container" style="position:relative;">
+    <!-- SVG and overlays will be injected here -->
+    <div class="particles"></div>
   </div>
-
-  <div class="score-summary">
-    <p><strong>Saja Boys Score:</strong> <span id="sajaScore">--</span></p>
-    <p><strong>Huntr/x Score:</strong>  <span id="huntrixScore">--</span></p>
+  <div class="vote-ui">
+    <button class="vote-btn saja" id="voteSaja">Saja Boys</button>
+    <button class="vote-btn huntrix" id="voteHuntrix">Huntr/x</button>
   </div>
+  <div class="vote-counts">
+    <span class="count-label saja">Saja Boys: <span id="sajaCount">10</span></span>
+    <span class="count-label huntrix">Huntr/x: <span id="huntrixCount">10</span></span>
+  </div>
+  <script>
+    let votes = { saja: 10, huntrix: 10 };
+    const splitThreshold = 10;
 
-  <table>
-    <thead>
-      <tr>
-        <th>Saja Boys Songs</th><th>Score</th>
-        <th>Huntr/x Songs</th><th>Score</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Your Idol</td><td id="yourIdolScore">--</td>
-        <td>Golden</td>  <td id="goldenScore">--</td>
-      </tr>
-      <tr>
-        <td>Soda Pop</td><td id="sodaPopScore">--</td>
-        <td>What It Sounds Like</td>
-        <td id="soundsScore">--</td>
-      </tr>
-    </tbody>
-  </table>
+    const sajaBtn = document.getElementById('voteSaja');
+    const huntrixBtn = document.getElementById('voteHuntrix');
+    const sajaCount = document.getElementById('sajaCount');
+    const huntrixCount = document.getElementById('huntrixCount');
+    const container = document.getElementById('splitmoon-container');
+    const particles = document.querySelector('.particles');
 
-  <p style="font-size:0.9em;color:gray;">
-    * Spotify track popularity (0–100)
-  </p>
+    // Huntrix overlays
+    function createHuntrixOverlays() {
+      return `
+        <div class="huntrix-overlay"></div>
+        <div class="huntrix-glitter">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="huntrix-highlight"></div>
+      `;
+    }
 
-  <script src="index.js" defer></script>
+    function renderMoon(mode) {
+      let svg = '';
+      if (mode === 'split') {
+        svg = `
+        <svg id="splitmoon-svg" viewBox="0 0 240 240">
+          <defs>
+            <clipPath id="leftHalf">
+              <path d="M0,0 L120,0 L120,240 L0,240 Z"/>
+            </clipPath>
+            <clipPath id="rightHalf">
+              <path d="M120,0 L240,0 L240,240 L120,240 Z"/>
+            </clipPath>
+            <radialGradient id="huntrixIrr" cx="70%" cy="40%" r="100%">
+              <stop offset="0%" stop-color="#fffbe9" />
+              <stop offset="35%" stop-color="#e2c4ff" />
+              <stop offset="65%" stop-color="#b6fff7" />
+              <stop offset="100%" stop-color="#fceeec" />
+            </radialGradient>
+            <radialGradient id="sajaFire" cx="35%" cy="60%" r="100%">
+              <stop offset="10%" stop-color="#fff0fa" />
+              <stop offset="50%" stop-color="#ff46c7" />
+              <stop offset="80%" stop-color="#ff0080" />
+              <stop offset="100%" stop-color="#8b0058" />
+            </radialGradient>
+          </defs>
+          <g clip-path="url(#leftHalf)">
+            <circle cx="120" cy="120" r="120" fill="url(#sajaFire)" />
+          </g>
+          <g clip-path="url(#rightHalf)">
+            <circle cx="120" cy="120" r="120" fill="url(#huntrixIrr)" />
+          </g>
+          <polygon id="riftV" points="110,0 130,0 120,230" fill="#111" />
+        </svg>`;
+        container.innerHTML = svg + `<div class="particles"></div>`;
+      } else if (mode === 'saja') {
+        svg = `
+        <svg id="splitmoon-svg" viewBox="0 0 240 240">
+          <defs>
+            <radialGradient id="sajaFire" cx="35%" cy="60%" r="100%">
+              <stop offset="10%" stop-color="#fff0fa" />
+              <stop offset="50%" stop-color="#ff46c7" />
+              <stop offset="80%" stop-color="#ff0080" />
+              <stop offset="100%" stop-color="#8b0058" />
+            </radialGradient>
+          </defs>
+          <circle cx="120" cy="120" r="120" fill="url(#sajaFire)" />
+        </svg>`;
+        container.innerHTML = svg;
+      } else {
+        svg = `
+        <svg id="splitmoon-svg" viewBox="0 0 240 240">
+          <defs>
+            <radialGradient id="huntrixIrr" cx="70%" cy="40%" r="100%">
+              <stop offset="0%" stop-color="#fffbe9" />
+              <stop offset="35%" stop-color="#e2c4ff" />
+              <stop offset="65%" stop-color="#b6fff7" />
+              <stop offset="100%" stop-color="#fceeec" />
+            </radialGradient>
+          </defs>
+          <circle cx="120" cy="120" r="120" fill="url(#huntrixIrr)" />
+        </svg>`;
+        container.innerHTML = svg + createHuntrixOverlays();
+      }
+    }
+
+    // Particles rise from the bottom of the rift upwards ALL the way to the top, in hot pink/red
+    function spawnParticle() {
+      // V bottom: (120,230) in viewBox coordinates
+      const baseX = 120 + (Math.random() * 12 - 6); // +-6 px
+      const baseY = 230 + (Math.random() * 8 - 4); // +-4 px
+
+      // End: somewhere at the top edge, spreading out a little horizontally, but always y = 0~8
+      const endX = 120 + (Math.random() - 0.5) * 44; // more spread at top
+      const endY = Math.random() * 12; // top edge of SVG
+
+      const s = document.createElement('span');
+      s.style.left = `${baseX/240*100}%`;
+      s.style.top  = `${baseY/240*100}%`;
+      const size = Math.random()*4+5;
+      s.style.width = s.style.height = `${size}px`;
+
+      // HOT pink/red gradient
+      const color1 = ['#fff0fa','#ff46c7','#ff0080'][Math.floor(Math.random()*3)];
+      const color2 = ['#ff0080','#ff0033','#ff1a53','#e00047'][Math.floor(Math.random()*4)];
+      s.style.background = `radial-gradient(circle at 60% 50%,${color1} 25%,${color2} 100%)`;
+      s.style.boxShadow = "0 0 16px 2px #ff1a5377";
+
+      s.animate([
+        { left: `${baseX/240*100}%`, top: `${baseY/240*100}%`, opacity: 0.96, filter: "blur(0px)", transform: "scale(1)" },
+        { left: `${(endX)/240*100}%`, top: `${(endY)/240*100}%`, opacity: 0, filter: "blur(10px)", transform: "scale(1.3)" }
+      ], {
+        duration: 1900,
+        easing: "cubic-bezier(0.46,0.03,0.52,0.96)"
+      });
+      const pDiv = container.querySelector('.particles');
+      if (pDiv) pDiv.appendChild(s);
+      setTimeout(() => s.remove(), 1900);
+    }
+    let particleInt = null;
+    function startParticles() { 
+      if (!particleInt) particleInt = setInterval(spawnParticle, 95); 
+      const pDiv = container.querySelector('.particles');
+      if (pDiv) pDiv.style.opacity = "1";
+    }
+    function stopParticles() { 
+      clearInterval(particleInt); 
+      particleInt = null; 
+      const pDiv = container.querySelector('.particles');
+      if (pDiv) {
+        pDiv.style.opacity = "0";
+        pDiv.innerHTML = "";
+      }
+    }
+
+    function updateState() {
+      sajaCount.textContent = votes.saja;
+      huntrixCount.textContent = votes.huntrix;
+      let mode;
+      if (Math.abs(votes.saja - votes.huntrix) <= splitThreshold) {
+        mode = "split";
+        renderMoon(mode);
+        startParticles();
+      } else if (votes.saja > votes.huntrix) {
+        mode = "saja";
+        renderMoon(mode);
+        stopParticles();
+      } else {
+        mode = "huntrix";
+        renderMoon(mode);
+        stopParticles();
+      }
+    }
+
+    sajaBtn.onclick = () => { votes.saja++; updateState(); };
+    huntrixBtn.onclick = () => { votes.huntrix++; updateState(); };
+
+    updateState();
+  </script><body>
+  <!-- Fanmoon orb and vote buttons -->
+  <div id="fanmoon" class="fanmoon huntrix-win"></div>
+  <button id="vote-huntrix">Vote Huntr/x</button>
+  <button id="vote-saja">Vote Saja</button>
+
+  <!-- Module script goes here, just before </body> -->
+  <script type="module">
+    // 1) Import the SDK pieces you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import {
+      getDatabase,
+      ref,
+      onValue,
+      set
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+    // 2) Your Firebase config (from the console)
+    const firebaseConfig = {
+      apiKey: "AIzaSyAAjM5tVDJ5ynaoN-Ju3TgbsfXm0lBEbVI",
+      authDomain: "honmoon-kpop.firebaseapp.com",
+      databaseURL: "https://honmoon-kpop-default-rtdb.firebaseio.com",
+      projectId: "honmoon-kpop",
+      storageBucket: "honmoon-kpop.appspot.com",
+      messagingSenderId: "1009037444916",
+      appId: "1:1009037444916:web:a54fb2bed4dd8ff21f8761",
+      measurementId: "G-KDLM6N65DE"
+    };
+
+    // 3) Initialize
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getDatabase(app);
+
+    // 4) Anonymous sign-in
+    signInAnonymously(auth).then(() => {
+      const uid = auth.currentUser.uid;
+
+      // 5) Listen for global tallies
+      const countsRef = ref(db, 'counts');
+      onValue(countsRef, snap => {
+        const { huntrix = 0, saja = 0 } = snap.val() || {};
+        // TODO: update your on-page counters, or swap Fanmoon state:
+        // e.g. setFanmoonState(huntrix > saja ? 'huntrix-win' : 'saja-win');
+        console.log('Counts:', { huntrix, saja });
+      });
+
+      // 6) Listen for *this* user’s vote
+      const myVoteRef = ref(db, `votes/${uid}`);
+      onValue(myVoteRef, snap => {
+        const vote = snap.val(); // 'huntrix' | 'saja' | null
+        // TODO: visually mark which button is active
+        console.log('My vote is:', vote);
+      });
+
+      // 7) Casting a vote (or changing it)
+      function castVote(band) {
+        set(ref(db, `votes/${uid}`), band);
+      }
+
+      document.getElementById('vote-huntrix')
+              .addEventListener('click', () => castVote('huntrix'));
+      document.getElementById('vote-saja')
+              .addEventListener('click', () => castVote('saja'));
+    });
+  </script><script type="module">
+  // 1) Import only what we need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+  import {
+    getDatabase,
+    ref,
+    onValue,
+    set
+  } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+  // 2) Your Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyAAjM5tVDJ5ynaoN-Ju3TgbsfXm0lBEbVI",
+    authDomain: "honmoon-kpop.firebaseapp.com",
+    databaseURL: "https://honmoon-kpop-default-rtdb.firebaseio.com",
+    projectId: "honmoon-kpop",
+    storageBucket: "honmoon-kpop.appspot.com",
+    messagingSenderId: "1009037444916",
+    appId: "1:1009037444916:web:a54fb2bed4dd8ff21f8761",
+    measurementId: "G-KDLM6N65DE"
+  };
+
+  // 3) Init Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db   = getDatabase(app);
+
+  // 4) Grab UI elements
+  const fanmoon         = document.getElementById('fanmoon');
+  const riftSVG         = document.querySelector('.rift-svg');
+  const glitter         = fanmoon.querySelector('.glitter');
+  const glitterParticles= document.querySelector('.glitter-particles');
+  const sajaCountEl     = document.getElementById('saja-count');
+  const huntrixCountEl  = document.getElementById('huntrix-count');
+
+  // Local mirror of counts for updateFanmoon()
+  let votes = { saja:0, huntrix:0 };
+
+  // --- Utility: Update vote counters in DOM ---
+  function updateVoteCounts() {
+    sajaCountEl.textContent    = votes.saja;
+    huntrixCountEl.textContent = votes.huntrix;
+  }
+
+  // --- Your existing spawnParticle / startBurnParticles / stopBurnParticles … leave untouched ---
+
+  // --- Main Fanmoon update logic (unchanged) ---
+  function updateFanmoon() {
+    fanmoon.classList.remove('saja','huntrix','split');
+    if (riftSVG)         riftSVG.style.display = 'none';
+    if (glitter)         glitter.style.display = 'none';
+    if (glitterParticles) glitterParticles.innerHTML = '';
+    // stopBurnParticles();  // if you have this defined
+
+    // Determine state
+    const diff = Math.abs(votes.saja - votes.huntrix);
+    if (diff <= 10 && votes.saja !== votes.huntrix) {
+      fanmoon.classList.add('split');
+      if (riftSVG) riftSVG.style.display = 'block';
+      // startBurnParticles();
+      if (glitter) glitter.style.display = '';
+    }
+    else if (votes.huntrix > votes.saja) {
+      fanmoon.classList.add('huntrix');
+      if (glitter) glitter.style.display = '';
+    }
+    else {
+      fanmoon.classList.add('saja');
+    }
+
+    updateVoteCounts();
+  }
+
+  // 5) After anonymous auth, wire up live listeners & button handlers
+  signInAnonymously(auth).then(() => {
+    const uid = auth.currentUser.uid;
+
+    // ▶️ Live‐update global counts
+    onValue(ref(db, 'counts'), snap => {
+      const c = snap.val() || {};
+      votes.saja    = c.saja    || 0;
+      votes.huntrix = c.huntrix || 0;
+      updateFanmoon();
+    });
+
+    // ▶️ Button clicks now write to /votes/{uid}
+    function castVote(band) {
+      set(ref(db, `votes/${uid}`), band);
+    }
+    document.getElementById('vote-saja')
+            .onclick = () => castVote('saja');
+    document.getElementById('vote-huntrix')
+            .onclick = () => castVote('huntrix');
+    document.getElementById('redact-vote')
+            .onclick = () => castVote(null);
+  }).catch(err => console.error(err));
+</script>
+
 </body>
 </html>
 
