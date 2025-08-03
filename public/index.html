@@ -153,15 +153,16 @@
 
     // Your config
     const firebaseConfig = {
-      apiKey: "...",
-      authDomain: "honmoon-kpop.firebaseapp.com",
-      databaseURL: "https://honmoon-kpop-default-rtdb.firebaseio.com",
-      projectId: "honmoon-kpop",
-      storageBucket: "honmoon-kpop.appspot.com",
-      messagingSenderId: "1009037444916",
-      appId: "1:1009037444916:web:a54fb2bed4dd8ff21f8761",
-      measurementId: "G-KDLM6N65DE"
-    };
+    apiKey: "AIzaSyAAjM5tVDJ5ynaoN-Ju3TgbsfXm0lBEbVI",
+    authDomain: "honmoon-kpop.firebaseapp.com",
+    databaseURL: "https://honmoon-kpop-default-rtdb.firebaseio.com",
+    projectId: "honmoon-kpop",
+    storageBucket: "honmoon-kpop.firebasestorage.app",
+    messagingSenderId: "1009037444916",
+    appId: "1:1009037444916:web:a54fb2bed4dd8ff21f8761",
+    measurementId: "G-KDLM6N65DE"
+  };
+
     const app  = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db   = getDatabase(app);
