@@ -38,12 +38,12 @@ async function fetchCounts() {
 
 // ─────────── DOM References & State ───────────
 const container       = document.getElementById('splitmoon-container');
-const particlesDiv    = container.querySelector('.particles');
-const sajaCountEl     = document.getElementById('saja-count');
-const huntrixCountEl  = document.getElementById('huntrix-count');
-const sajaBtn         = document.getElementById('vote-saja');
-const huntrixBtn      = document.getElementById('vote-huntrix');
-const redactBtn       = document.getElementById('redact-vote');
+let particlesDiv     = container.querySelector('.particles');
+const sajaCountEl    = document.getElementById('saja-count');
+const huntrixCountEl = document.getElementById('huntrix-count');
+const sajaBtn        = document.getElementById('vote-saja');
+const huntrixBtn     = document.getElementById('vote-huntrix');
+const redactBtn      = document.getElementById('redact-vote');
 
 let votes = { saja: 0, huntrix: 0 };
 const splitThreshold = 10;
@@ -53,22 +53,22 @@ let particleInterval;
 function spawnParticle() {
   const baseX = 120 + (Math.random() * 12 - 6);
   const baseY = 230 + (Math.random() * 8 - 4);
-  const endX = 120 + (Math.random() - 0.5) * 44;
-  const endY = Math.random() * 12;
+  const endX  = 120 + (Math.random() - 0.5) * 44;
+  const endY  = Math.random() * 12;
 
   const s = document.createElement('span');
-  s.style.left   = `${baseX/240*100}%`;
-  s.style.top    = `${baseY/240*100}%`;
-  const size      = Math.random()*4 + 5;
-  s.style.width  = s.style.height = `${size}px`;
-  const color1    = ['#fff0fa','#ff46c7','#ff0080'][Math.floor(Math.random()*3)];
-  const color2    = ['#ff0080','#ff0033','#ff1a53','#e00047'][Math.floor(Math.random()*4)];
-  s.style.background = `radial-gradient(circle at 60% 50%,${color1} 25%,${color2} 100%)`;
-  s.style.boxShadow   = '0 0 16px 2px #ff1a5377';
+  s.style.left      = `${baseX/240*100}%`;
+  s.style.top       = `${baseY/240*100}%`;
+  const size        = Math.random() * 4 + 5;
+  s.style.width     = s.style.height = `${size}px`;
+  const color1      = ['#fff0fa','#ff46c7','#ff0080'][Math.floor(Math.random()*3)];
+  const color2      = ['#ff0080','#ff0033','#ff1a53','#e00047'][Math.floor(Math.random()*4)];
+  s.style.background= `radial-gradient(circle at 60% 50%,${color1} 25%,${color2} 100%)`;
+  s.style.boxShadow = '0 0 16px 2px #ff1a5377';
 
   s.animate([
-    { left: `${baseX/240*100}%`, top: `${baseY/240*100}%`, opacity:0.96, filter:'blur(0px)', transform:'scale(1)' },
-    { left: `${endX/240*100}%`,      top: `${endY/240*100}%`,      opacity:0,    filter:'blur(10px)', transform:'scale(1.3)' }
+    { left: `${baseX/240*100}%`, top: `${baseY/240*100}%`, opacity: 0.96, filter: 'blur(0px)',   transform: 'scale(1)' },
+    { left: `${endX/240*100}%`,      top: `${endY/240*100}%`,      opacity: 0,    filter: 'blur(10px)', transform: 'scale(1.3)' }
   ], {
     duration: 1900,
     easing: 'cubic-bezier(0.46,0.03,0.52,0.96)'
@@ -104,17 +104,57 @@ function renderMoon(mode) {
   let html = '';
   if (mode === 'split') {
     html = `
-      <svg id="splitmoon-svg" viewBox="0 0 240 240">…CodePen split SVG details…</svg>
+      <svg id="splitmoon-svg" viewBox="0 0 240 240">
+        <defs>
+          <clipPath id="leftHalf"><path d="M0,0 L120,0 L120,240 L0,240 Z"/></clipPath>
+          <clipPath id="rightHalf"><path d="M120,0 L240,0 L240,240 L120,240 Z"/></clipPath>
+          <radialGradient id="huntrixIrr" cx="70%" cy="40%" r="100%">
+            <stop offset="0%" stop-color="#fffbe9"/>
+            <stop offset="35%" stop-color="#e2c4ff"/>
+            <stop offset="65%" stop-color="#b6fff7"/>
+            <stop offset="100%" stop-color="#fceeec"/>
+          </radialGradient>
+          <radialGradient id="sajaFire" cx="35%" cy="60%" r="100%">
+            <stop offset="10%" stop-color="#fff0fa"/>
+            <stop offset="50%" stop-color="#ff46c7"/>
+            <stop offset="80%" stop-color="#ff0080"/>
+            <stop offset="100%" stop-color="#8b0058"/>
+          </radialGradient>
+        </defs>
+        <g clip-path="url(#leftHalf)"><circle cx="120" cy="120" r="120" fill="url(#sajaFire)"/></g>
+        <g clip-path="url(#rightHalf)"><circle cx="120" cy="120" r="120" fill="url(#huntrixIrr)"/></g>
+        <polygon id="riftV" points="110,0 130,0 120,230" fill="#111"/>
+      </svg>
       ${createHuntrixOverlays()}
       <div class="particles"></div>
     `;
   } else if (mode === 'saja') {
     html = `
-      <svg id="splitmoon-svg" viewBox="0 0 240 240">…CodePen saja circle…</svg>
+      <svg id="splitmoon-svg" viewBox="0 0 240 240">
+        <defs>
+          <radialGradient id="sajaFire" cx="35%" cy="60%" r="100%">
+            <stop offset="10%" stop-color="#fff0fa"/>
+            <stop offset="50%" stop-color="#ff46c7"/>
+            <stop offset="80%" stop-color="#ff0080"/>
+            <stop offset="100%" stop-color="#8b0058"/>
+          </radialGradient>
+        </defs>
+        <circle cx="120" cy="120" r="120" fill="url(#sajaFire)"/>
+      </svg>
     `;
   } else {
     html = `
-      <svg id="splitmoon-svg" viewBox="0 0 240 240">…CodePen huntrix circle…</svg>
+      <svg id="splitmoon-svg" viewBox="0 0 240 240">
+        <defs>
+          <radialGradient id="huntrixIrr" cx="70%" cy="40%" r="100%">
+            <stop offset="0%" stop-color="#fffbe9"/>
+            <stop offset="35%" stop-color="#e2c4ff"/>
+            <stop offset="65%" stop-color="#b6fff7"/>
+            <stop offset="100%" stop-color="#fceeec"/>
+          </radialGradient>
+        </defs>
+        <circle cx="120" cy="120" r="120" fill="url(#huntrixIrr)"/>
+      </svg>
       ${createHuntrixOverlays()}
     `;
   }
@@ -134,7 +174,6 @@ async function updateMoon() {
   renderMoon(mode);
   if (mode === 'split') startParticles(); else stopParticles();
 
-  // show or hide retract button
   redactBtn.style.display = auth.currentUser ? '' : 'none';
 }
 
@@ -161,3 +200,4 @@ signInAnonymously(auth)
     };
   })
   .catch(console.error);
+
