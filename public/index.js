@@ -92,102 +92,13 @@ function stopParticles() {
 // ─────────── UI Rendering ───────────
 function createHuntrixOverlays() {
   return `
+    <div class="huntrix-highlight"></div>
     <div class="huntrix-overlay"></div>
     <div class="huntrix-glitter">
       <span></span><span></span><span></span><span></span><span></span>
     </div>
-    <div class="huntrix-highlight"></div>
   `;
-}
-
-function renderMoon(mode) {
-  let html = '';
-  if (mode === 'split') {
-    html = `
-      <svg id="splitmoon-svg" viewBox="0 0 240 240">
-        <defs>
-          <clipPath id="leftHalf"><path d="M0,0 L120,0 L120,240 L0,240 Z"/></clipPath>
-          <clipPath id="rightHalf"><path d="M120,0 L240,0 L240,240 L120,240 Z"/></clipPath>
-          <radialGradient id="huntrixIrr" cx="70%" cy="40%" r="100%">
-            <stop offset="0%" stop-color="#fffbe9"/>
-            <stop offset="35%" stop-color="#e2c4ff"/>
-            <stop offset="65%" stop-color="#b6fff7"/>
-            <stop offset="100%" stop-color="#fceeec"/>
-          </radialGradient>
-          <radialGradient id="sajaFire" cx="35%" cy="60%" r="100%">
-            <stop offset="10%" stop-color="#fff0fa"/>
-            <stop offset="50%" stop-color="#ff46c7"/>
-            <stop offset="80%" stop-color="#ff0080"/>
-            <stop offset="100%" stop-color="#8b0058"/>
-          </radialGradient>
-        </defs>
-        <g clip-path="url(#leftHalf)"><circle cx="120" cy="120" r="120" fill="url(#sajaFire)"/></g>
-        <g clip-path="url(#rightHalf)"><circle cx="120" cy="120" r="120" fill="url(#huntrixIrr)"/></g>
-        <polygon id="riftV" points="110,0 130,0 120,230" fill="#111"/>
-      </svg>
-      ${createHuntrixOverlays()}
-      <div class="particles"></div>
-    `;
-  } else if (mode === 'saja') {
-    html = `
-      <svg id="splitmoon-svg" viewBox="0 0 240 240">
-        <defs>
-          <radialGradient id="sajaFire" cx="35%" cy="60%" r="100%">
-            <stop offset="10%" stop-color="#fff0fa"/>
-            <stop offset="50%" stop-color="#ff46c7"/>
-            <stop offset="80%" stop-color="#ff0080"/>
-            <stop offset="100%" stop-color="#8b0058"/>
-          </radialGradient>
-        </defs>
-        <circle cx="120" cy="120" r="120" fill="url(#sajaFire)"/>
-      </svg>
-    `;
-  } else {
-    html = `
-      <svg id="splitmoon-svg" viewBox="0 0 240 240">
-        <defs>
-          <radialGradient id="huntrixIrr" cx="70%" cy="40%" r="100%">
-            <stop offset="0%" stop-color="#fffbe9"/>
-            <stop offset="35%" stop-color="#e2c4ff"/>
-            <stop offset="65%" stop-color="#b6fff7"/>
-            <stop offset="100%" stop-color="#fceeec"/>
-          </radialGradient>
-        </defs>
-        <circle cx="120" cy="120" r="120" fill="url(#huntrixIrr)"/>
-      </svg>
-      ${createHuntrixOverlays()}
-    `;
-  }
-  container.innerHTML = html;
-  // re-select particlesDiv inside new innerHTML
-  particlesDiv = container.querySelector('.particles');
-}
-
-async function updateMoon() {
-  sajaCountEl.textContent    = votes.saja;
-  huntrixCountEl.textContent = votes.huntrix;
-
-  const diff = Math.abs(votes.saja - votes.huntrix);
-  let mode = votes.saja > votes.huntrix ? 'saja' : 'huntrix';
-  if (diff <= splitThreshold && votes.saja !== votes.huntrix) mode = 'split';
-
-  renderMoon(mode);
-  if (mode === 'split') startParticles(); else stopParticles();
-
-  redactBtn.style.display = auth.currentUser ? '' : 'none';
-}
-
-// ─────────── Bootstrap ───────────
-signInAnonymously(auth)
-  .then(async () => {
-    votes = await fetchCounts();
-    await updateMoon();
-
-    sajaBtn.onclick = async () => {
-      await callVoteAPI('POST', { choice: 'saja' });
-      votes = await fetchCounts();
-      updateMoon();
-    };
+};
     huntrixBtn.onclick = async () => {
       await callVoteAPI('POST', { choice: 'huntrix' });
       votes = await fetchCounts();
@@ -200,4 +111,5 @@ signInAnonymously(auth)
     };
   })
   .catch(console.error);
+
 
