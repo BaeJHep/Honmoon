@@ -1,29 +1,18 @@
-// ─────────── Imports & Firebase Init ───────────
+// index.js
+
+// 1) Firebase App + Auth only
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-import {
-  getDatabase,
-  ref,
-  onValue,
-  set
-} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAAjM5tVDJ5ynaoN-Ju3TgbsfXm0lBEbVI",
   authDomain: "honmoon-kpop.firebaseapp.com",
-  databaseURL: "https://honmoon-kpop-default-rtdb.firebaseio.com",
   projectId: "honmoon-kpop",
-  storageBucket: "honmoon-kpop.appspot.com",
-  messagingSenderId: "1009037444916",
-  appId: "1:1009037444916:web:a54fb2bed4dd8ff21f8761",
-  measurementId: "G-KDLM6N65DE"
 };
+initializeApp(firebaseConfig);
+const auth = getAuth();
 
-const app  = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db   = getDatabase(app);
-
-// ─────────── Cached DOM References ───────────
+// 2) DOM refs
 const fanmoon          = document.getElementById('fanmoon');
 const glitter          = fanmoon.querySelector('.glitter');
 const riftSVG          = document.querySelector('.rift-svg');
@@ -31,38 +20,34 @@ const glitterParticles = document.querySelector('.glitter-particles');
 const sajaCountEl      = document.getElementById('saja-count');
 const huntrixCountEl   = document.getElementById('huntrix-count');
 
-// ─────────── Local State ───────────
-let votes       = { saja: 0, huntrix: 0 };
-let burnInterval;
+// 3) Local vote state
+let myVote = null;        // 'saja' | 'huntrix' | null
+let votes  = { saja: 0, huntrix: 0 };
 
-// ─────────── Utility: Update Vote Counters ───────────
-function updateVoteCounts() {
-  sajaCountEl.textContent    = votes.saja;
-  huntrixCountEl.textContent = votes.huntrix;
+// 4) Helper: call our new API
+async function callVoteAPI(method, data) {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Not signed in");
+  const token = await user.getIdToken();
+  const res = await fetch('/api/vote', {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    body: data ? JSON.stringify(data) : undefined
+  });
+  return res.json();
 }
 
-// ─────────── Particle Logic (unchanged) ───────────
-function spawnParticle() {
-  // ... copy your existing spawnParticle() implementation here ...
-}
-
-function startBurnParticles() {
-  stopBurnParticles();
-  burnInterval = setInterval(spawnParticle, 200);
-}
-
-function stopBurnParticles() {
-  clearInterval(burnInterval);
-}
-
-// ─────────── Main Fanmoon Update ───────────
+// 5) Update the UI based on myVote & (optionally) global counts
 function updateFanmoon() {
   fanmoon.classList.remove('saja', 'huntrix', 'split');
   if (riftSVG)          riftSVG.style.display = 'none';
   if (glitter)          glitter.style.display = 'none';
   if (glitterParticles) glitterParticles.innerHTML = '';
-  stopBurnParticles();
 
+  // simple “split” logic
   const diff = Math.abs(votes.saja - votes.huntrix);
   if (diff <= 10 && votes.saja !== votes.huntrix) {
     fanmoon.classList.add('split');
@@ -72,47 +57,46 @@ function updateFanmoon() {
   else if (votes.huntrix > votes.saja) {
     fanmoon.classList.add('huntrix');
     if (glitter) glitter.style.display = '';
-  }
-  else {
+  } else {
     fanmoon.classList.add('saja');
   }
 
-  updateVoteCounts();
+  // show *your* vote count as 1 or 0
+  sajaCountEl.textContent    = myVote === 'saja'    ? '1' : '0';
+  huntrixCountEl.textContent = myVote === 'huntrix' ? '1' : '0';
 }
 
-// ─────────── Vote Cast Helper ───────────
-function castVote(band) {
-  // Write your single vote; null removes it
-  set(ref(db, `votes/${auth.currentUser.uid}`), band);
-}
+// (If you still want global tallies, you’d need another API like `/api/voteCount` here.)
 
-// ─────────── Wire up Firebase & Buttons ───────────
+// 6) Sign in & wire up
 signInAnonymously(auth)
-  .then(() => {
-    const uid = auth.currentUser.uid;
+  .then(async () => {
+    // 6a) load *your* vote
+    const { vote } = await callVoteAPI('GET');
+    myVote = vote;
+    updateFanmoon();
 
-    // 1) Listen to global tallies
-    onValue(ref(db, 'counts'), snap => {
-      const c = snap.val() || {};
-      votes.saja    = c.saja    || 0;
-      votes.huntrix = c.huntrix || 0;
-      updateFanmoon();
-    });
-
-    // 2) Listen to *this* user’s vote (to highlight buttons if desired)
-    onValue(ref(db, `votes/${uid}`), snap => {
-      const vote = snap.val(); // 'saja' | 'huntrix' | null
-      // e.g. toggle active styling on your vote buttons here
-      console.log("My vote:", vote);
-    });
-
-    // 3) Attach vote buttons
+    // 6b) button handlers
     document.getElementById('vote-saja')
-            .addEventListener('click', () => castVote('saja'));
+      .addEventListener('click', async () => {
+        await callVoteAPI('POST', { choice: 'saja' });
+        myVote = 'saja';
+        updateFanmoon();
+      });
+
     document.getElementById('vote-huntrix')
-            .addEventListener('click', () => castVote('huntrix'));
+      .addEventListener('click', async () => {
+        await callVoteAPI('POST', { choice: 'huntrix' });
+        myVote = 'huntrix';
+        updateFanmoon();
+      });
+
     document.getElementById('redact-vote')
-            .addEventListener('click', () => castVote(null));
+      .addEventListener('click', async () => {
+        await callVoteAPI('DELETE');
+        myVote = null;
+        updateFanmoon();
+      });
   })
   .catch(console.error);
 
