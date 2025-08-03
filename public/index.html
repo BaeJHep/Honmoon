@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
   <!-- 1) Load the Firebase SDKs first -->
   <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js"></script>
-  </head>head>
+
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>The FanMoon</title>
+
   <style>
-    </head>
-    <body>
     /* ─────────── Page & Button Reset ─────────── */
     * { box-sizing: border-box; margin:0; padding:0; }
     html { font-size:16px; }
@@ -114,7 +113,7 @@
       display:flex; justify-content:center; gap:2rem;
       margin-bottom:1.5rem;
     }
-    .vote-counts .saja { color:#ff46c7; }
+    .vote-counts .saja    { color:#ff46c7; }
     .vote-counts .huntrix { color:#3dd8ff; }
   </style>
 
@@ -147,71 +146,8 @@
   </div>
 
   <!-- ─────────── Firebase + Vote Logic ─────────── -->
- <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-
-  // 1) Init Firebase
-  const firebaseConfig = {
-    apiKey: "YOUR_FIREBASE_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-  };
-  initializeApp(firebaseConfig);
-  const auth = getAuth();
-
-  // 2) Helpers to call your new API
-  async function callVoteAPI(method, body) {
-    const user = auth.currentUser;
-    if (!user) throw new Error("Not signed in");
-    const token = await user.getIdToken();
-    const res = await fetch("/api/vote", {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token,
-      },
-      body: body ? JSON.stringify(body) : undefined,
-    });
-    return res.json();
-  }
-
-  // 3) UI update functions
-  const fan = document.getElementById("fanmoon");
-  const btnS = document.getElementById("vote-saja");
-  const btnH = document.getElementById("vote-huntrix");
-  const elS  = document.getElementById("saja-count");
-  const elH  = document.getElementById("huntrix-count");
-
-  function refreshDisplay(vote) {
-    // highlight orb
-    fan.className = "";
-    if (vote === "saja") fan.classList.add("saja-win");
-    else if (vote === "huntrix") fan.classList.add("huntrix-win");
-
-    // show just the user’s vote count (we’ll handle global counts later)
-    elS.textContent = vote === "saja"    ? "1" : "0";
-    elH.textContent = vote === "huntrix" ? "1" : "0";
-  }
-
-  // 4) Sign in & load initial vote
-  signInAnonymously(auth)
-    .then(async () => {
-      // fetch the user’s current vote
-      const { vote } = await callVoteAPI("GET");
-      refreshDisplay(vote);
-
-      // wire up buttons
-      btnS.onclick = async () => {
-        await callVoteAPI("POST", { choice: "saja" });
-        refreshDisplay("saja");
-      };
-      btnH.onclick = async () => {
-        await callVoteAPI("POST", { choice: "huntrix" });
-        refreshDisplay("huntrix");
-      };
-    })
-    .catch(console.error);
-</script>
+  <script type="module" src="index.js"></script>
+</body>
+</html>
 
 
