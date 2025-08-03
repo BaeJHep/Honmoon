@@ -158,4 +158,76 @@ body {
 
 .count-label.saja { color: #ff46c7;}
 .count-label.huntrix { color: #3dd8ff;}
+/* ─────────── Fanmoon Orb & Effects ─────────── */
+#fanmoon {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  background: #000;
+  overflow: hidden;
+  /* golden halo */
+  box-shadow:
+    inset 0 10px 30px rgba(0,0,0,0.7),
+    0 0 60px rgba(255,215,0,0.4);
+}
+
+/* Rift crack lines */
+.rift-svg {
+  position: absolute;
+  inset: 0;
+  display: none;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Static glitter overlay */
+.glitter {
+  position: absolute;
+  inset: 0;
+  display: none;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  z-index: 4;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.3), transparent 60%);
+}
+
+/* Animated particles */
+.glitter-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+.glitter-particles span {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform, opacity;
+  background: radial-gradient(circle at 60% 50%, #fffbe9 0%, #ff7dbe 70%, #e00047 100%);
+  box-shadow: 0 0 4px 1px #ff0b4c33;
+}
+
+/* ─────────── Retract Button Styling ─────────── */
+.retract-btn {
+  font-size: 1rem;
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 2rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+  background: linear-gradient(90deg, #ffe5ec, #e2c4ff);
+  color: #4b3585;
+  transition: transform .12s, box-shadow .12s;
+}
+.retract-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+.retract-btn:active {
+  transform: scale(0.95);
+}
+
 
