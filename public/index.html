@@ -4,26 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The FanMoon</title>
-  <!-- your external CSS -->
+  <!-- external CSS -->
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
   <h1>The FanMoon</h1>
 
   <!-- THE ORB -->
-  <div id="fanmoon" class="huntrix-win">
-    <!-- Rift SVG (hidden until split state) -->
-    <svg class="rift-svg" style="display:none; position:absolute; inset:0; z-index:5; pointer-events:none;" viewBox="0 0 200 200">
-      <path d="M50,0 L150,200" stroke="#fff" stroke-width="2" />
-      <path d="M150,0 L50,200" stroke="#fff" stroke-width="2" />
+  <div id="splitmoon-container">
+    <!-- Base orb SVG -->
+    <svg id="splitmoon-svg" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="100" fill="#000" />
     </svg>
 
-    <!-- Static glitter overlay -->
-    <div class="glitter" style="display:none; position:absolute; inset:0; border-radius:50%; mix-blend-mode:screen; z-index:4;"></div>
+    <!-- Huntrix animated overlays -->
+    <div class="huntrix-overlay"></div>
+    <div class="huntrix-glitter">
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="huntrix-highlight"></div>
 
-    <!-- Dynamic particle container -->
-    <div class="glitter-particles" style="position:absolute; inset:0; pointer-events:none; z-index:3;"></div>
+    <!-- Rift crack particles -->
+    <div class="particles"></div>
   </div>
 
   <!-- VOTE BUTTONS -->
@@ -33,32 +35,21 @@
   </div>
 
   <!-- RETRACT BUTTON -->
-  <div class="retract-ui" style="text-align:center; margin-top: 1rem;">
-    <button id="redact-vote" class="vote-btn retract-btn" style="display: none; background: linear-gradient(90deg, #ffe5ec, #e2c4ff); color: #4b3585;">
+  <div class="retract-ui">
+    <button id="redact-vote" class="vote-btn retract-btn" style="display:none;">
       Retract Vote
     </button>
   </div>
 
   <!-- COUNTERS -->
   <div class="vote-counts">
-    <div class="saja">Saja Boys: <span id="saja-count">0</span></div>
-    <div class="huntrix">Huntr/x:   <span id="huntrix-count">0</span></div>
+    <div class="count-label saja">Saja Boys: <span id="saja-count">0</span></div>
+    <div class="count-label huntrix">Huntr/x: <span id="huntrix-count">0</span></div>
   </div>
-
-  <!-- SVG Noise Filter (needed for your background noise) -->
-  <svg id="noise-defs" style="position:absolute;width:0;height:0;">
-    <filter id="pastelNoise">
-      <feTurbulence type="fractalNoise" stitchTiles="stitch"/>
-      <feColorMatrix type="matrix"/>
-      <feComposite in2="SourceGraphic" operator="over"/>
-    </filter>
-  </svg>
 
   <!-- Firebase + vote logic -->
   <script type="module" src="./index.js"></script>
 </body>
-</html>
-
 </html>
 
 
