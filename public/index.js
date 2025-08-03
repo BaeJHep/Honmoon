@@ -1,5 +1,6 @@
-// ===== public/index.js =====
-// Combined CodePen UI + DB integration
+// index.js
+
+// 1) Firebase App + Auth
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
 
@@ -11,112 +12,60 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 const auth = getAuth();
 
-// ─── callVoteAPI ─────────────────────────────────
-signInAnonymously(auth).then(async () => {
-  // initial load
-  votes = await fetchCounts();
-  updateFanmoon();
+// 2) callVoteAPI must be defined *before* any handlers use it
+async function callVoteAPI(method, data) {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Not signed in");
+  const token = await user.getIdToken();
+  const res = await fetch("/api/vote", {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+    body: data ? JSON.stringify(data) : undefined,
+  });
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  return res.json();
+}
 
+// 3) fetchCounts to drive your UI
+let votes = { saja: 0, huntrix: 0 };
+async function fetchCounts() {
+  const res = await fetch("/api/voteCount");
+  if (!res.ok) throw new Error("Count API failed");
+  return res.json();
+}
+
+// 4) Your CodePen UI helpers
+function spawnParticle() { /* ... */ }
+function startParticles() { /* ... */ }
+function stopParticles() { /* ... */ }
+function renderMoon(mode) { /* ... */ }
+function updateMoon() { /* ... */ }
+
+// 5) Wire up after sign‐in
+signInAnonymously(auth).then(async () => {
+  // load initial counts + render
+  votes = await fetchCounts();
+  updateMoon();
+
+  // now these handlers see callVoteAPI!
   document.getElementById("vote-saja").onclick = async () => {
     await callVoteAPI("POST", { choice: "saja" });
     votes = await fetchCounts();
-    updateFanmoon();
+    updateMoon();
   };
   document.getElementById("vote-huntrix").onclick = async () => {
     await callVoteAPI("POST", { choice: "huntrix" });
     votes = await fetchCounts();
-    updateFanmoon();
+    updateMoon();
   };
   document.getElementById("redact-vote").onclick = async () => {
     await callVoteAPI("DELETE");
     votes = await fetchCounts();
-    updateFanmoon();
+    updateMoon();
   };
-});
-
-// ─── fetchCounts ────────────────────────────────
-async function fetchCounts() {
-  const res = await fetch("/api/voteCount");
-  const text = await res.text();
-  if (!res.ok) {
-    throw new Error(`Count API error ${res.status}: ${text}`);
-  }
-  try {
-    return JSON.parse(text);
-  } catch {
-    throw new Error(`Invalid JSON from /api/voteCount: ${text}`);
-  }
-}
-
-// ─── UI Elements ────────────────────────────────
-const container      = document.getElementById('splitmoon-container');
-const particlesDiv   = container.querySelector('.particles');
-const sajaCountEl    = document.getElementById('saja-count');
-const huntrixCountEl = document.getElementById('huntrix-count');
-const sajaBtn        = document.getElementById('vote-saja');
-const huntrixBtn     = document.getElementById('vote-huntrix');
-const retractBtn     = document.getElementById('redact-vote');
-let particleInterval;
-const splitThreshold = 10;
-
-// ─── Particle Logic ─────────────────────────────
-function spawnParticle() {
-  /* copy your CodePen spawnParticle implementation here */
-}
-function startParticles() { if (!particleInterval) particleInterval = setInterval(spawnParticle, 95); particlesDiv.style.opacity = '1'; }
-function stopParticles()  { clearInterval(particleInterval); particleInterval = null; particlesDiv.style.opacity = '0'; particlesDiv.innerHTML = ''; }
-
-// ─── renderMoon ────────────────────────────────
-function createHuntrixOverlays() {
-  return `
-    <div class="huntrix-overlay"></div>
-    <div class="huntrix-glitter">
-      <span></span><span></span><span></span><span></span><span></span>
-    </div>
-    <div class="huntrix-highlight"></div>
-  `;
-}
-
-function renderMoon(mode) {
-  let html = '';
-  if (mode === 'split') {
-    html = `
-      <svg id="splitmoon-svg" viewBox="0 0 240 240">...defs+split paths...</svg>
-      ${createHuntrixOverlays()}
-      <div class="particles"></div>
-    `;
-  } else if (mode === 'saja') {
-    html = `<svg id="splitmoon-svg" viewBox="0 0 240 240">...saja circle defs...</svg>`;
-  } else {
-    html = `
-      <svg id="splitmoon-svg" viewBox="0 0 240 240">...huntrix circle defs...</svg>
-      ${createHuntrixOverlays()}
-    `;
-  }
-  container.innerHTML = html;
-}
-
-// ─── updateUI ──────────────────────────────────
-function updateUI() {
-  sajaCountEl.textContent    = votes.saja;
-  huntrixCountEl.textContent = votes.huntrix;
-  const diff = Math.abs(votes.saja - votes.huntrix);
-  let mode = votes.saja > votes.huntrix ? 'saja' : 'huntrix';
-  if (diff <= splitThreshold && votes.saja !== votes.huntrix) mode = 'split';
-  renderMoon(mode);
-  if (mode === 'split') startParticles(); else stopParticles();
-  retractBtn.style.display = auth.currentUser ? '' : 'none';
-}
-
-// ─── Wire Up ──────────────────────────────────
-signInAnonymously(auth).then(() => {
-  fetchCounts();
-  sajaBtn.onclick    = async () => { await callVoteAPI('POST',{choice:'saja'}); await fetchCounts(); };
-  huntrixBtn.onclick = async () => { await callVoteAPI('POST',{choice:'huntrix'}); await fetchCounts(); };
-  retractBtn.onclick = async () => { await callVoteAPI('DELETE'); await fetchCounts(); };
 }).catch(console.error);
-
-// Initial UI render
-updateUI();
 
 
