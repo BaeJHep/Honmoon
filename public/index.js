@@ -12,31 +12,39 @@ initializeApp(firebaseConfig);
 const auth = getAuth();
 
 // ─── callVoteAPI ─────────────────────────────────
-async function callVoteAPI(method, data) {
-  const user = auth.currentUser;
-  if (!user) throw new Error('Not signed in');
-  const token = await user.getIdToken();
-  const res = await fetch('/api/vote', {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: data ? JSON.stringify(data) : undefined
-  });
-  if (!res.ok) throw new Error(`API error ${res.status}: ` + await res.text());
-  return res.json();
-}
+signInAnonymously(auth).then(async () => {
+  // initial load
+  votes = await fetchCounts();
+  updateFanmoon();
+
+  document.getElementById("vote-saja").onclick = async () => {
+    await callVoteAPI("POST", { choice: "saja" });
+    votes = await fetchCounts();
+    updateFanmoon();
+  };
+  document.getElementById("vote-huntrix").onclick = async () => {
+    await callVoteAPI("POST", { choice: "huntrix" });
+    votes = await fetchCounts();
+    updateFanmoon();
+  };
+  document.getElementById("redact-vote").onclick = async () => {
+    await callVoteAPI("DELETE");
+    votes = await fetchCounts();
+    updateFanmoon();
+  };
+});
 
 // ─── fetchCounts ────────────────────────────────
-let votes = { saja:0, huntrix:0 };
 async function fetchCounts() {
+  const res = await fetch("/api/voteCount");
+  const text = await res.text();
+  if (!res.ok) {
+    throw new Error(`Count API error ${res.status}: ${text}`);
+  }
   try {
-    const c = await fetch('/api/voteCount').then(r => r.json());
-    votes = c;
-    updateUI();
-  } catch (e) {
-    console.error('fetchCounts failed:', e);
+    return JSON.parse(text);
+  } catch {
+    throw new Error(`Invalid JSON from /api/voteCount: ${text}`);
   }
 }
 
