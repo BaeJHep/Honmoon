@@ -1,69 +1,120 @@
-let flashInterval = null;
+// ─────────── Imports & Firebase Init ───────────
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+import {
+  getDatabase,
+  ref,
+  onValue,
+  set
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
 
-async function updateTracker() {
-  try {
-    const res  = await fetch('/api/streams');
-    const data = await res.json();
+const firebaseConfig = {
+  apiKey: "AIzaSyAAjM5tVDJ5ynaoN-Ju3TgbsfXm0lBEbVI",
+  authDomain: "honmoon-kpop.firebaseapp.com",
+  databaseURL: "https://honmoon-kpop-default-rtdb.firebaseio.com",
+  projectId: "honmoon-kpop",
+  storageBucket: "honmoon-kpop.appspot.com",
+  messagingSenderId: "1009037444916",
+  appId: "1:1009037444916:web:a54fb2bed4dd8ff21f8761",
+  measurementId: "G-KDLM6N65DE"
+};
 
-    const honmoon        = document.getElementById('honmoon');
-    const statusEl       = document.getElementById('status');
-    const sajaScoreEl    = document.getElementById('sajaScore');
-    const huntrixScoreEl = document.getElementById('huntrixScore');
-    const yourIdolEl     = document.getElementById('yourIdolScore');
-    const sodaPopEl      = document.getElementById('sodaPopScore');
-    const goldenEl       = document.getElementById('goldenScore');
-    const soundsEl       = document.getElementById('soundsScore');
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getDatabase(app);
 
-    // Combined scores
-    const saja    = data.sajaBoysScore;
-    const huntrix = data.huntrixScore;
+// ─────────── Cached DOM References ───────────
+const fanmoon          = document.getElementById('fanmoon');
+const glitter          = fanmoon.querySelector('.glitter');
+const riftSVG          = document.querySelector('.rift-svg');
+const glitterParticles = document.querySelector('.glitter-particles');
+const sajaCountEl      = document.getElementById('saja-count');
+const huntrixCountEl   = document.getElementById('huntrix-count');
 
-    // Update display values
-    sajaScoreEl.textContent    = saja   ?? '--';
-    huntrixScoreEl.textContent = huntrix ?? '--';
-    yourIdolEl.textContent     = data.scores.yourIdol ?? '--';
-    sodaPopEl.textContent      = data.scores.sodaPop  ?? '--';
-    goldenEl.textContent       = data.scores.golden   ?? '--';
-    soundsEl.textContent       = data.scores.sounds   ?? '--';  // fixed property name
+// ─────────── Local State ───────────
+let votes       = { saja: 0, huntrix: 0 };
+let burnInterval;
 
-    // Clear any existing flash interval
-    if (flashInterval) {
-      clearInterval(flashInterval);
-      flashInterval = null;
-    }
-
-    // Tie → flash between strong/weak
-    if (saja === huntrix) {
-      statusEl.textContent = 'TIE';
-      let showSaja = false;
-      flashInterval = setInterval(() => {
-        showSaja = !showSaja;
-        honmoon.classList.toggle('strong', !showSaja);
-        honmoon.classList.toggle('weak', showSaja);
-      }, 1000);
-    }
-    // Saja Boys lead → pink ("weak")
-    else if (saja > huntrix) {
-      honmoon.classList.replace('strong', 'weak');
-      statusEl.textContent = 'WEAK';
-    }
-    // Huntr/x lead → purple ("strong")
-    else {
-      honmoon.classList.replace('weak', 'strong');
-      statusEl.textContent = 'STRONG';
-    }
-
-  } catch (err) {
-    console.error('Error fetching stream data:', err);
-  }
+// ─────────── Utility: Update Vote Counters ───────────
+function updateVoteCounts() {
+  sajaCountEl.textContent    = votes.saja;
+  huntrixCountEl.textContent = votes.huntrix;
 }
 
-// Initial load + refresh every 15 seconds
-updateTracker();
-setInterval(updateTracker, 15000);
+// ─────────── Particle Logic (unchanged) ───────────
+function spawnParticle() {
+  // ... copy your existing spawnParticle() implementation here ...
+}
 
+function startBurnParticles() {
+  stopBurnParticles();
+  burnInterval = setInterval(spawnParticle, 200);
+}
 
-// Initial load + refresh every 15 seconds
-updateTracker();
-setInterval(updateTracker, 15000);
+function stopBurnParticles() {
+  clearInterval(burnInterval);
+}
 
+// ─────────── Main Fanmoon Update ───────────
+function updateFanmoon() {
+  fanmoon.classList.remove('saja', 'huntrix', 'split');
+  if (riftSVG)          riftSVG.style.display = 'none';
+  if (glitter)          glitter.style.display = 'none';
+  if (glitterParticles) glitterParticles.innerHTML = '';
+  stopBurnParticles();
+
+  const diff = Math.abs(votes.saja - votes.huntrix);
+  if (diff <= 10 && votes.saja !== votes.huntrix) {
+    fanmoon.classList.add('split');
+    if (riftSVG) startBurnParticles(), riftSVG.style.display = 'block';
+    if (glitter) glitter.style.display = '';
+  }
+  else if (votes.huntrix > votes.saja) {
+    fanmoon.classList.add('huntrix');
+    if (glitter) glitter.style.display = '';
+  }
+  else {
+    fanmoon.classList.add('saja');
+  }
+
+  updateVoteCounts();
+}
+
+// ─────────── Vote Cast Helper ───────────
+function castVote(band) {
+  // Write your single vote; null removes it
+  set(ref(db, `votes/${auth.currentUser.uid}`), band);
+}
+
+// ─────────── Wire up Firebase & Buttons ───────────
+signInAnonymously(auth)
+  .then(() => {
+    const uid = auth.currentUser.uid;
+
+    // 1) Listen to global tallies
+    onValue(ref(db, 'counts'), snap => {
+      const c = snap.val() || {};
+      votes.saja    = c.saja    || 0;
+      votes.huntrix = c.huntrix || 0;
+      updateFanmoon();
+    });
+
+    // 2) Listen to *this* user’s vote (to highlight buttons if desired)
+    onValue(ref(db, `votes/${uid}`), snap => {
+      const vote = snap.val(); // 'saja' | 'huntrix' | null
+      // e.g. toggle active styling on your vote buttons here
+      console.log("My vote:", vote);
+    });
+
+    // 3) Attach vote buttons
+    document.getElementById('vote-saja')
+            .addEventListener('click', () => castVote('saja'));
+    document.getElementById('vote-huntrix')
+            .addEventListener('click', () => castVote('huntrix'));
+    document.getElementById('redact-vote')
+            .addEventListener('click', () => castVote(null));
+  })
+  .catch(console.error);
+
+// ─────────── Initial Render ───────────
+updateFanmoon();
