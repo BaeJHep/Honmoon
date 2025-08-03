@@ -12,18 +12,29 @@
   <h1>The FanMoon</h1>
 
   <!-- THE ORB -->
-  <div id="fanmoon" class="huntrix-win"></div>
+  <div id="fanmoon" class="huntrix-win">
+    <!-- Rift SVG (hidden until split state) -->
+    <svg class="rift-svg" style="display:none; position:absolute; inset:0; z-index:5; pointer-events:none;" viewBox="0 0 200 200">
+      <path d="M50,0 L150,200" stroke="#fff" stroke-width="2" />
+      <path d="M150,0 L50,200" stroke="#fff" stroke-width="2" />
+    </svg>
 
-  <!-- BUTTONS -->
+    <!-- Static glitter overlay -->
+    <div class="glitter" style="display:none; position:absolute; inset:0; border-radius:50%; mix-blend-mode:screen; z-index:4;"></div>
+
+    <!-- Dynamic particle container -->
+    <div class="glitter-particles" style="position:absolute; inset:0; pointer-events:none; z-index:3;"></div>
+  </div>
+
+  <!-- VOTE BUTTONS -->
   <div class="vote-ui">
     <button id="vote-saja"    class="vote-btn saja">Vote Saja Boys</button>
     <button id="vote-huntrix" class="vote-btn huntrix">Vote Huntr/x</button>
-    <!-- hidden until you’ve cast a vote -->
-    <button
-      id="redact-vote"
-      class="vote-btn"
-      style="display: none;"
-    >
+  </div>
+
+  <!-- RETRACT BUTTON -->
+  <div class="retract-ui" style="text-align:center; margin-top: 1rem;">
+    <button id="redact-vote" class="vote-btn retract-btn" style="display: none; background: linear-gradient(90deg, #ffe5ec, #e2c4ff); color: #4b3585;">
       Retract Vote
     </button>
   </div>
@@ -46,6 +57,8 @@
   <!-- Firebase + vote logic -->
   <script type="module" src="./index.js"></script>
 </body>
+</html>
+
 </html>
 
 
