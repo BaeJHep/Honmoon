@@ -12,10 +12,32 @@
 
   <!-- FANMOON WRAPPER: for DB integration and visual updates -->
   <div id="fanmoon" class="huntrix-win">
-    <!-- Split‐moon container for dynamic SVG and overlays -->
-    <div id="splitmoon-container">
-      <!-- SVG injected by CodePen script or index.js -->
-    </div>
+  <!-- Split‐moon container for dynamic SVG and overlays -->
+<div id="splitmoon-container">
+  <svg id="splitmoon-svg" viewBox="0 0 240 240">
+    <!-- pink left half -->
+    <defs>
+      <linearGradient id="pinkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#ff46c7"/>
+        <stop offset="100%" stop-color="#e00047"/>
+      </linearGradient>
+    </defs>
+    <circle cx="120" cy="120" r="120"
+            fill="url(#pinkGrad)"
+            clip-path="inset(0 120px 0 0)" />
+
+    <!-- blue right half -->
+    <defs>
+      <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#b6fff7"/>
+        <stop offset="100%" stop-color="#ffe5ec"/>
+      </linearGradient>
+    </defs>
+    <circle cx="120" cy="120" r="120"
+            fill="url(#blueGrad)"
+            clip-path="inset(0 0 0 120px)" />
+  </svg>
+</div>
 
     <!-- Rift overlay for split state (hidden by default via CSS) -->
     <svg class="rift-svg" viewBox="0 0 240 240">
