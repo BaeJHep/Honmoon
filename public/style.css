@@ -7,7 +7,18 @@ body {
   text-align: center;
   padding-top: 24px;
 }
-
+/* hide dynamic pieces until JS flip */
+body.loading #splitmoon-container,
+body.loading .rift-svg,
+body.loading .huntrix-overlay,
+body.loading .huntrix-glitter,
+body.loading .huntrix-highlight,
+body.loading .particles,
+body.loading .vote-ui,
+body.loading .retract-ui,
+body.loading .vote-counts {
+  display: none;
+}
 #fanmoon {
   position: relative;
   width: 240px;
