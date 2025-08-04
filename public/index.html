@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The FanMoon</title>
-  <!-- external CSS -->
+  <!-- External CSS -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -12,13 +12,13 @@
 
   <!-- FANMOON WRAPPER: for DB integration and visual updates -->
   <div id="fanmoon" class="huntrix-win">
-    <!-- CODEPEN ORB CONTAINER (UI rendering) -->
-    <div id="splitmoon-container" style="position:relative;">
-      <!-- dynamic SVG and overlays will be injected by codepen script or index.js -->
+    <!-- Split‐moon container for dynamic SVG and overlays -->
+    <div id="splitmoon-container">
+      <!-- SVG injected by CodePen script or index.js -->
     </div>
 
-    <!-- Rift overlay for split state (hidden by default) -->
-    <svg class="rift-svg" style="display:none; position:absolute; inset:0; z-index:5; pointer-events:none;" viewBox="0 0 240 240">
+    <!-- Rift overlay for split state (hidden by default via CSS) -->
+    <svg class="rift-svg" viewBox="0 0 240 240">
       <polygon id="riftV" points="110,0 130,0 120,230" fill="#111" />
     </svg>
 
@@ -41,7 +41,7 @@
 
   <!-- RETRACT BUTTON -->
   <div class="retract-ui">
-    <button id="redact-vote" class="vote-btn retract-btn" style="display:none;">
+    <button id="redact-vote" class="vote-btn retract-btn">
       Retract Vote
     </button>
   </div>
@@ -49,15 +49,10 @@
   <!-- COUNTERS -->
   <div class="vote-counts">
     <div class="count-label saja">Saja Boys: <span id="saja-count">0</span></div>
-    <div class="count-label huntrix">Huntr/x: <span id="huntrix-count">0</span></div>
+    <div class="count-label huntrix">Huntr/x:   <span id="huntrix-count">0</span></div>
   </div>
 
   <!-- Firebase + vote logic -->
   <script type="module" src="./index.js"></script>
-
-  <!-- Original CodePen Script: UI rendering (optional, you may integrate into index.js) -->
-  <script>
-    // CodePen renderMoon and particle logic goes here if not migrating fully to index.js
-  </script>
 </body>
 </html>
