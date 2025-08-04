@@ -187,42 +187,23 @@ body.loading .vote-counts {
   filter: brightness(1.07);
 }
 
-/* ─────────── Retract Button — New Styles ─────────── */
+/* ─────────── Retract Button — Swirling Gradient ─────────── */
 .retract-btn {
-  background: linear-gradient(45deg, #e00047, #ff46c7);
+  position: relative;
+  background: transparent;
   color: #fff;
   border: none;
   border-radius: 2.4em;
   padding: 18px 34px;
   font-size: 1.5rem;
   font-weight: 700;
-  position: relative;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(224,0,71,0.5);
   transition: transform 0.2s, box-shadow 0.2s;
-}
-
-@keyframes glowPulse {
-  0%,100% { box-shadow: 0 4px 12px rgba(224,0,71,0.5); }
-  50%     { box-shadow: 0 6px 20px rgba(224,0,71,0.7); }
-}
-
-.retract-btn {
+  z-index: 1;
   animation: glowPulse 2.5s ease-in-out infinite;
 }
 
-/* ─ Heartbeat Pulse Animation ─ */
-@keyframes heartbeat {
-  0%, 20%, 60%, 100% { transform: scale(1); }
-  40% { transform: scale(1.1); }
-  80% { transform: scale(1.05); }
-}
-
-#fanmoon.heartbeat {
-  animation: heartbeat 0.6s ease-out;
-}
-
-/* Shiny sweep effect */
 .retract-btn::before {
   content: '';
   position: absolute;
@@ -230,10 +211,55 @@ body.loading .vote-counts {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle at center, rgba(255,255,255,0.25) 0%, transparent 70%);
-  transform: translateX(-100%) rotate(45deg);
-  transition: transform 0.6s ease-out;
+  background: conic-gradient(from 0deg at 50% 50%,
+    #ff46c7, #e00047, #b6fff7, #e2c4ff, #ffe5ec, #ff46c7);
+  animation: swirlConic 4s linear infinite;
 }
+
+@keyframes swirlConic {
+  to { transform: rotate(360deg); }
+}
+
+/* Pulsing glow */
+@keyframes glowPulse {
+  0%,100% { box-shadow: 0 4px 12px rgba(224,0,71,0.5); }
+  50%     { box-shadow: 0 6px 20px rgba(224,0,71,0.7); }
+}
+
+/* Hover & Active states */
+.retract-btn:hover {
+  transform: scale(1.05);
+}
+.retract-btn:active {
+  transform: scale(0.95);
+  animation: none;
+}
+
+.vote-btn:active { transform: scale(0.95); }
+.vote-btn.saja {
+  background: linear-gradient(90deg, #ff46c7 0%, #e00047 100%);
+  color: #fff;
+  box-shadow: 0 2px 20px 3px #ff69b455, 0 2px 12px #e0004740;
+  text-shadow: 0 1px 4px #e0004780;
+}
+.vote-btn.huntrix {
+  background: linear-gradient(90deg, #b6fff7 0%, #e2c4ff 54%, #ffe5ec 100%);
+  color: #4b3585;
+  box-shadow: 0 2px 20px 3px #b6fff765, 0 2px 12px #e2c4ff60;
+  text-shadow: 0 1px 4px #fff8;
+}
+
+.vote-counts {
+  margin: 10px 0 24px;
+  font-size: 1.1em;
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  font-weight: 600;
+}
+.count-label.saja { color: #ff46c7; }
+.count-label.huntrix { color: #3dd8ff; }
+
 
 .retract-btn:hover::before {
   transform: translateX(0) rotate(45deg);
