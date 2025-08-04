@@ -127,6 +127,55 @@ body {
   letter-spacing: 0.02em;
   filter: brightness(1.07);
 }
+/* ─────────── Retract Button — New Styles ─────────── */
+.retract-btn {
+  background: linear-gradient(45deg, #e00047, #ff46c7);
+  color: #fff;
+  border: none;
+  border-radius: 2.4em;
+  padding: 18px 34px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(224,0,71,0.5);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Pulsing glow */
+@keyframes glowPulse {
+  0%,100% { box-shadow: 0 4px 12px rgba(224,0,71,0.5); }
+  50%     { box-shadow: 0 6px 20px rgba(224,0,71,0.7); }
+}
+.retract-btn {
+  animation: glowPulse 2.5s ease-in-out infinite;
+}
+
+/* Shiny sweep effect */
+.retract-btn::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.25) 0%, transparent 70%);
+  transform: translateX(-100%) rotate(45deg);
+  transition: transform 0.6s ease-out;
+}
+.retract-btn:hover::before {
+  transform: translateX(0) rotate(45deg);
+}
+
+/* Hover & Active states */
+.retract-btn:hover {
+  transform: scale(1.05);
+}
+.retract-btn:active {
+  transform: scale(0.95);
+  animation: none; /* stop the glow while pressed */
+}
+
 .vote-btn:active { transform: scale(0.95);}
 .vote-btn.saja {
   background: linear-gradient(90deg, #ff46c7 0%, #e00047 100%);
