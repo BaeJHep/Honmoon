@@ -37,16 +37,22 @@ async function fetchCounts() {
 }
 
 // ─────────── DOM References & State ───────────
-const fanmoonDiv   = document.getElementById('fanmoon');
-const particlesDiv = fanmoonDiv.querySelector('.particles');
-const sajaCountEl    = document.getElementById('saja-count');
-const huntrixCountEl = document.getElementById('huntrix-count');
-const sajaBtn        = document.getElementById('vote-saja');
-const huntrixBtn     = document.getElementById('vote-huntrix');
-const redactBtn      = document.getElementById('redact-vote');
+const fanmoonDiv      = document.getElementById('fanmoon');
+const splitContainer  = document.getElementById('splitmoon-container');
+const particlesDiv    = fanmoonDiv.querySelector('.particles');
+const riftSvg         = fanmoonDiv.querySelector('.rift-svg');
+const huntrixOverlay  = fanmoonDiv.querySelector('.huntrix-overlay');
+const huntrixGlitter  = fanmoonDiv.querySelector('.huntrix-glitter');
+const huntrixHighlight= fanmoonDiv.querySelector('.huntrix-highlight');
 
-let votes = { saja: 0, huntrix: 0 };
-let hasVoted = false;
+const sajaCountEl     = document.getElementById('saja-count');
+const huntrixCountEl  = document.getElementById('huntrix-count');
+const sajaBtn         = document.getElementById('vote-saja');
+const huntrixBtn      = document.getElementById('vote-huntrix');
+const redactBtn       = document.getElementById('redact-vote');
+
+let votes            = { saja: 0, huntrix: 0 };
+let hasVoted         = false;
 const splitThreshold = 10;
 let particleInterval;
 
@@ -103,21 +109,33 @@ function createHuntrixOverlays() {
 }
 
 function updateMoon() {
-  // Update vote counts
-  sajaCountEl.textContent = votes.saja;
+  // 1) Update vote counts
+  sajaCountEl.textContent    = votes.saja;
   huntrixCountEl.textContent = votes.huntrix;
 
-  // Show/hide the retract button
-  redactBtn.style.display = hasVoted ? 'inline-block' : 'none';
+  // 2) Show/hide retract button
+  redactBtn.style.display     = hasVoted ? 'inline-block' : 'none';
 
-  // Toggle orb classes based on which side is leading
+  // 3) Toggle orb win classes
   fanmoonDiv.classList.toggle('huntrix-win', votes.huntrix > votes.saja);
   fanmoonDiv.classList.toggle('saja-win',    votes.saja > votes.huntrix);
 
-  // Start or stop particles based on threshold
+  // 4) (Optional) dynamic moon render
+  // if you have a renderMoon() from CodePen, call it here:
+  // renderMoon(votes);
+
+  // 5) Split UI: show rift SVG & particles when threshold reached
   if (Math.abs(votes.saja - votes.huntrix) >= splitThreshold) {
+    riftSvg.style.display        = 'block';
+    huntrixOverlay.style.display = 'none';
+    huntrixGlitter.style.display = 'none';
+    huntrixHighlight.style.display = 'none';
     startParticles();
   } else {
+    riftSvg.style.display        = 'none';
+    huntrixOverlay.style.display = '';
+    huntrixGlitter.style.display = '';
+    huntrixHighlight.style.display = '';
     stopParticles();
   }
 }
@@ -125,23 +143,25 @@ function updateMoon() {
 // ─────────── Authenticate & Bootstrap ───────────
 signInAnonymously(auth)
   .then(async () => {
-    // Initial fetch and UI render
+    // Initial load: fetch counts & render
     votes = await fetchCounts();
     updateMoon();
 
-    // Wire up vote buttons
+    // Bind vote handlers
     sajaBtn.onclick = async () => {
       await callVoteAPI('POST', { choice: 'saja' });
       votes = await fetchCounts();
       hasVoted = true;
       updateMoon();
     };
+
     huntrixBtn.onclick = async () => {
       await callVoteAPI('POST', { choice: 'huntrix' });
       votes = await fetchCounts();
       hasVoted = true;
       updateMoon();
     };
+
     redactBtn.onclick = async () => {
       await callVoteAPI('DELETE');
       votes = await fetchCounts();
