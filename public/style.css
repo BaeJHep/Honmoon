@@ -50,3 +50,54 @@ body {
   overflow: visible;
   z-index: 0;
   /* inner vignette + golden halo glow */
+  width: 3px;
+  height: 3px;
+  animation: slideUp 1.9s cubic-bezier(0.46,0.03,0.52,0.96) forwards;
+}
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(40px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ─────────── Voting UI & Counts ─────────── */
+.vote-ui {
+  margin: 24px 0 10px;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+.vote-btn {
+  font-size: 1.5rem;
+  padding: 18px 34px;
+  border: none;
+  border-radius: 2.4em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .12s, box-shadow .18s;
+  box-shadow: 0 2px 16px 2px #0002;
+  letter-spacing: 0.02em;
+  filter: brightness(1.07);
+}
+.vote-btn:active { transform: scale(0.95); }
+.vote-btn.saja {
+  background: linear-gradient(90deg, #ff46c7 0%, #e00047 100%);
+  color: #fff;
+  box-shadow: 0 2px 20px 3px #ff69b455, 0 2px 12px #e0004740;
+  text-shadow: 0 1px 4px #e0004780;
+}
+.vote-btn.huntrix {
+  background: linear-gradient(90deg, #b6fff7 0%, #e2c4ff 54%, #ffe5ec 100%);
+  color: #4b3585;
+  box-shadow: 0 2px 20px 3px #b6fff765, 0 2px 12px #e2c4ff60;
+  text-shadow: 0 1px 4px #fff8;
+}
+.vote-counts {
+  margin: 10px 0 24px;
+  font-size: 1.1em;
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  font-weight: 600;
+}
+.count-label.saja { color: #ff46c7; }
+.count-label.huntrix { color: #3dd8ff; }
