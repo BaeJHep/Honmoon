@@ -23,7 +23,17 @@ body {
     0 0 60px rgba(255,215,0,0.4);
 }
 
-/* ─────────── Split‐Moon Container ─────────── */
+/* ─────────── Fanmoon & Split‐Moon Container ─────────── */
+#fanmoon {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: #000;
+  overflow: hidden;
+}
+
 #splitmoon-container {
   position: absolute;
   inset: 0;
@@ -31,6 +41,20 @@ body {
   transform-origin: center;
   border-radius: 50%;
   overflow: hidden;
+  /* INSET VIGNETTE + OUTER GOLDEN GLOW */
+  box-shadow:
+    inset 0 20px 40px rgba(0,0,0,0.6),
+    0 0 80px rgba(255,215,0,0.5);
+  z-index: 1;  /* below overlays/rift */
+}
+
+/* ─── Two‐Tone SVG inside ─── */
+#splitmoon-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 50%;  /* clip potential overflow */
 }
 
 /* ─────────── Two-Tone Moon + Magical Glow ─────────── */
