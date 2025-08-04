@@ -101,6 +101,15 @@ function createHuntrixOverlays() {
     </div>
   `;
 };
+sajaBtn.onclick = async () => {
+  // 1. Send a POST to record a “saja” vote
+  await callVoteAPI('POST', { choice: 'saja' });
+  // 2. Re-fetch the updated totals
+  votes = await fetchCounts();
+  // 3. Re-render the moon (we’ll build updateMoon() soon)
+  updateMoon();
+};
+
     huntrixBtn.onclick = async () => {
       await callVoteAPI('POST', { choice: 'huntrix' });
       votes = await fetchCounts();
