@@ -20,31 +20,7 @@ body {
   overflow: hidden;
   border-radius: 50%;
 }
-/* ─────────── Restore Halo & Inner Shadow ─────────── */
-#splitmoon-svg,
-#splitmoon-container svg {
-  /* replace the hard drop‐shadow with both an inset dark vignette
-     and a soft golden glow on the outside */
-  filter:
-    inset 0 10px 30px rgba(0, 0, 0, 0.7),
-    0 0 60px rgba(255, 215, 0, 0.4);
-}
 
-/* ─────────── Subtle Ambient Highlight ─────────── */
-#splitmoon-container::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  /* light diffuse glow in the center */
-  background: radial-gradient(
-    circle at 50% 45%,
-    rgba(255, 255, 255, 0.12) 0%,
-    transparent 60%
-  );
-  pointer-events: none;
-  z-index: 2; /* sits above the SVG but below the rift overlay */
-}
 #fanmoon {
   background: #000;
   box-shadow:
@@ -55,29 +31,6 @@ body {
 #splitmoon-container {
   perspective: 900px;
   transform-origin: center;
-}
-
-/* Halo & sizing on injected SVG */
-#splitmoon-svg,
-#splitmoon-container svg {
-  width: 100%;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-  overflow: visible;
-  z-index: 1;
-  filter:
-    drop-shadow(0 0 48px #ffb6eeb0)
-    drop-shadow(0 0 24px #bbfff7a0);
-}
-
-/* ─────────── Rift Crack Lines ─────────── */
-.rift-svg {
-  position: absolute;
-  inset: 0;
-  display: none;
-  pointer-events: none;
-  z-index: 5;
 }
 
 /* ─────────── Huntrix Overlays ─────────── */
@@ -96,6 +49,10 @@ body {
   animation: swirlBlend 14s linear infinite;
 }
 @keyframes swirlBlend {
+  0%   { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(7deg) scale(1.05); }
+  100% { transform: rotate(0deg) scale(1); }
+} {
   0%   { transform: rotate(0deg) scale(1); }
   50%  { transform: rotate(7deg) scale(1.05); }
   100% { transform: rotate(0deg) scale(1); }
