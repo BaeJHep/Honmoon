@@ -36,17 +36,52 @@ async function fetchCounts() {
   return res.json();
 }
 
-// ─────────── DOM References & State ───────────
-const fanmoonDiv      = document.getElementById('fanmoon');
-const splitContainer  = document.getElementById('splitmoon-container');
-const particlesDiv    = fanmoonDiv.querySelector('.particles');
-const riftSvg         = fanmoonDiv.querySelector('.rift-svg');
-const huntrixOverlay  = fanmoonDiv.querySelector('.huntrix-overlay');
-const huntrixGlitter  = fanmoonDiv.querySelector('.huntrix-glitter');
-const huntrixHighlight= fanmoonDiv.querySelector('.huntrix-highlight');
+  // if you have a renderMoon() from CodePen, call it here:
+  // renderMoon(votes);
 
-const sajaCountEl     = document.getElementById('saja-count');
-const huntrixCountEl  = document.getElementById('huntrix-count');
-const sajaBtn         = document.getElementById('vote-saja');
-const huntrixBtn      = document.getElementById('vote-huntrix');
-const redactBtn       = document.getElementById('redact-vote');
+  // 5) Split UI: show rift SVG & particles when threshold reached
+  if (Math.abs(votes.saja - votes.huntrix) <= splitThreshold) {
+    riftSvg.style.display        = 'block';
+    huntrixOverlay.style.display = 'none';
+    huntrixGlitter.style.display = 'none';
+    huntrixHighlight.style.display = 'none';
+    startParticles();
+  } else {
+    riftSvg.style.display        = 'none';
+    huntrixOverlay.style.display = '';
+    huntrixGlitter.style.display = '';
+    huntrixHighlight.style.display = '';
+    stopParticles();
+  }
+}
+
+// ─────────── Authenticate & Bootstrap ───────────
+signInAnonymously(auth)
+  .then(async () => {
+    // Initial load: fetch counts & render
+    votes = await fetchCounts();
+    updateMoon();
+
+    // Bind vote handlers
+    sajaBtn.onclick = async () => {
+      await callVoteAPI('POST', { choice: 'saja' });
+      votes = await fetchCounts();
+      hasVoted = true;
+      updateMoon();
+    };
+
+    huntrixBtn.onclick = async () => {
+      await callVoteAPI('POST', { choice: 'huntrix' });
+      votes = await fetchCounts();
+      hasVoted = true;
+      updateMoon();
+    };
+
+    redactBtn.onclick = async () => {
+      await callVoteAPI('DELETE');
+      votes = await fetchCounts();
+      hasVoted = false;
+      updateMoon();
+    };
+  })
+  .catch(console.error);
