@@ -168,8 +168,8 @@ function updateMoon() {
 // ─────────── Authenticate & Bootstrap ───────────
 signInAnonymously(auth)
   .then(async () => {
-    // Draw the two-tone moon
-    splitContainer.innerHTML = renderMoon();
+    // SVG is already in HTML, just grab references:
+    grabOverlayElements();
 
     // Initial load: fetch counts & render
     votes = await fetchCounts();
