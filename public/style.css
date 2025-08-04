@@ -49,8 +49,9 @@ body {
   margin: 0 auto;
   overflow: visible;
   z-index: 0;
-  /* inner vignette + golden halo glow */
-  filter: inset 0 10px 30px rgba(0,0,0,0.7), 0 0 60px rgba(255,215,0,0.4);
+
+  /* Corrected: use box-shadow instead of filter */
+  box-shadow: inset 0 10px 30px rgba(0,0,0,0.7), 0 0 60px rgba(255,215,0,0.4);
 }
 
 /* ─────────── Rift Crack Lines ─────────── */
