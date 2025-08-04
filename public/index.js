@@ -37,8 +37,10 @@ async function fetchCounts() {
 }
 
 // ─────────── DOM References & State ───────────
-const container       = document.getElementById('splitmoon-container');
-let particlesDiv     = container.querySelector('.particles');
+// Grab the fanmoon wrapper first
+const fanmoonDiv   = document.getElementById('fanmoon');
+// Then find the .particles div inside it
+const particlesDiv = fanmoonDiv.querySelector('.particles');
 const sajaCountEl    = document.getElementById('saja-count');
 const huntrixCountEl = document.getElementById('huntrix-count');
 const sajaBtn        = document.getElementById('vote-saja');
