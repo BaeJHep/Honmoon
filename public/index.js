@@ -37,8 +37,9 @@ async function fetchCounts() {
 }
 
 // ─────────── DOM References & State ───────────
-const fanmoonDiv      = document.getElementById('fanmoon');
-const splitContainer  = document.getElementById('splitmoon-container');
+const fanmoonDiv     = document.getElementById('fanmoon');
+const splitContainer = document.getElementById('splitmoon-container');
+
 let particlesDiv, riftSvg, huntrixOverlay, huntrixGlitter, huntrixHighlight;
 function grabOverlayElements() {
   particlesDiv     = splitContainer.querySelector('.particles');
@@ -48,11 +49,11 @@ function grabOverlayElements() {
   riftSvg          = fanmoonDiv.querySelector('.rift-svg');
 }
 
-const sajaCountEl     = document.getElementById('saja-count');
-const huntrixCountEl  = document.getElementById('huntrix-count');
-const sajaBtn         = document.getElementById('vote-saja');
-const huntrixBtn      = document.getElementById('vote-huntrix');
-const redactBtn       = document.getElementById('redact-vote');
+const sajaCountEl    = document.getElementById('saja-count');
+const huntrixCountEl = document.getElementById('huntrix-count');
+const sajaBtn        = document.getElementById('vote-saja');
+const huntrixBtn     = document.getElementById('vote-huntrix');
+const redactBtn      = document.getElementById('redact-vote');
 
 let votes            = { saja: 0, huntrix: 0 };
 let hasVoted         = false;
@@ -127,16 +128,6 @@ function renderMoon() {
 }
 
 // ─────────── UI Rendering ───────────
-function createHuntrixOverlays() {
-  return `
-    <div class="huntrix-highlight"></div>
-    <div class="huntrix-overlay"></div>
-    <div class="huntrix-glitter">
-      <span></span><span></span><span></span><span></span><span></span>
-    </div>
-  `;
-}
-
 function updateMoon() {
   // 1) Update vote counts
   sajaCountEl.textContent    = votes.saja;
@@ -151,24 +142,32 @@ function updateMoon() {
 
   // 4) Split UI: show rift & particles when close
   if (Math.abs(votes.saja - votes.huntrix) <= splitThreshold) {
-    riftSvg.style.display        = 'block';
-    huntrixOverlay.style.display = 'none';
-    huntrixGlitter.style.display = 'none';
+    riftSvg.style.display          = 'block';
+    huntrixOverlay.style.display   = 'none';
+    huntrixGlitter.style.display   = 'none';
     huntrixHighlight.style.display = 'none';
     startParticles();
   } else {
-    riftSvg.style.display        = 'none';
-    huntrixOverlay.style.display = '';
-    huntrixGlitter.style.display = '';
+    riftSvg.style.display          = 'none';
+    huntrixOverlay.style.display   = '';
+    huntrixGlitter.style.display   = '';
     huntrixHighlight.style.display = '';
     stopParticles();
   }
 }
 
+// ─────────── Heartbeat Pulse Helper ───────────
+function triggerHeartbeat() {
+  fanmoonDiv.classList.add('heartbeat');
+  fanmoonDiv.addEventListener('animationend', () => {
+    fanmoonDiv.classList.remove('heartbeat');
+  }, { once: true });
+}
+
 // ─────────── Authenticate & Bootstrap ───────────
 signInAnonymously(auth)
   .then(async () => {
-    // SVG is already in HTML, just grab references:
+    // Grab overlays & particles after DOM exists
     grabOverlayElements();
 
     // Initial load: fetch counts & render
@@ -181,6 +180,7 @@ signInAnonymously(auth)
       votes = await fetchCounts();
       hasVoted = true;
       updateMoon();
+      triggerHeartbeat();
     };
 
     huntrixBtn.onclick = async () => {
@@ -188,8 +188,10 @@ signInAnonymously(auth)
       votes = await fetchCounts();
       hasVoted = true;
       updateMoon();
+      triggerHeartbeat();
     };
 
+    // Retract is not a “vote,” so we won’t pulse it—but you can if you like:
     redactBtn.onclick = async () => {
       await callVoteAPI('DELETE');
       votes = await fetchCounts();
@@ -198,3 +200,4 @@ signInAnonymously(auth)
     };
   })
   .catch(console.error);
+
