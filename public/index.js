@@ -129,18 +129,18 @@ function renderMoon() {
 
 // ─────────── UI Rendering ───────────
 function updateMoon() {
-  // 1) Update vote counts
+  // 1) Update counts
   sajaCountEl.textContent    = votes.saja;
   huntrixCountEl.textContent = votes.huntrix;
 
-  // 2) Show/hide retract button
+  // 2) Toggle retract button
   redactBtn.style.display     = hasVoted ? 'inline-block' : 'none';
 
-  // 3) Toggle orb win classes
+  // 3) Winner classes
   fanmoonDiv.classList.toggle('huntrix-win', votes.huntrix > votes.saja);
   fanmoonDiv.classList.toggle('saja-win',    votes.saja > votes.huntrix);
 
-  // 4) Split UI: show rift & particles when close
+  // 4) Rift vs. overlays
   if (Math.abs(votes.saja - votes.huntrix) <= splitThreshold) {
     riftSvg.style.display          = 'block';
     huntrixOverlay.style.display   = 'none';
@@ -167,14 +167,17 @@ function triggerHeartbeat() {
 // ─────────── Authenticate & Bootstrap ───────────
 signInAnonymously(auth)
   .then(async () => {
-    // Grab overlays & particles after DOM exists
+    // grab overlays now that DOM is ready
     grabOverlayElements();
 
-    // Initial load: fetch counts & render
+    // fetch counts and render initial state
     votes = await fetchCounts();
     updateMoon();
 
-    // Bind vote handlers
+    // now that everything is initialized, show the full UI
+    document.body.classList.remove('loading');
+
+    // bind vote handlers
     sajaBtn.onclick = async () => {
       await callVoteAPI('POST', { choice: 'saja' });
       votes = await fetchCounts();
@@ -191,7 +194,7 @@ signInAnonymously(auth)
       triggerHeartbeat();
     };
 
-    // Retract is not a “vote,” so we won’t pulse it—but you can if you like:
+    // retract handler (no heartbeat)
     redactBtn.onclick = async () => {
       await callVoteAPI('DELETE');
       votes = await fetchCounts();
