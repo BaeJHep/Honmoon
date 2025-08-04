@@ -37,9 +37,7 @@ async function fetchCounts() {
 }
 
 // ─────────── DOM References & State ───────────
-// Grab the fanmoon wrapper first
 const fanmoonDiv   = document.getElementById('fanmoon');
-// Then find the .particles div inside it
 const particlesDiv = fanmoonDiv.querySelector('.particles');
 const sajaCountEl    = document.getElementById('saja-count');
 const huntrixCountEl = document.getElementById('huntrix-count');
@@ -48,6 +46,7 @@ const huntrixBtn     = document.getElementById('vote-huntrix');
 const redactBtn      = document.getElementById('redact-vote');
 
 let votes = { saja: 0, huntrix: 0 };
+let hasVoted = false;
 const splitThreshold = 10;
 let particleInterval;
 
@@ -84,6 +83,7 @@ function startParticles() {
   if (!particleInterval) particleInterval = setInterval(spawnParticle, 95);
   particlesDiv.style.opacity = '1';
 }
+
 function stopParticles() {
   clearInterval(particleInterval);
   particleInterval = null;
@@ -100,27 +100,56 @@ function createHuntrixOverlays() {
       <span></span><span></span><span></span><span></span><span></span>
     </div>
   `;
-};
-sajaBtn.onclick = async () => {
-  // 1. Send a POST to record a “saja” vote
-  await callVoteAPI('POST', { choice: 'saja' });
-  // 2. Re-fetch the updated totals
-  votes = await fetchCounts();
-  // 3. Re-render the moon (we’ll build updateMoon() soon)
-  updateMoon();
-};
+}
 
+function updateMoon() {
+  // Update vote counts
+  sajaCountEl.textContent = votes.saja;
+  huntrixCountEl.textContent = votes.huntrix;
+
+  // Show/hide the retract button
+  redactBtn.style.display = hasVoted ? 'inline-block' : 'none';
+
+  // Toggle orb classes based on which side is leading
+  fanmoonDiv.classList.toggle('huntrix-win', votes.huntrix > votes.saja);
+  fanmoonDiv.classList.toggle('saja-win',    votes.saja > votes.huntrix);
+
+  // Start or stop particles based on threshold
+  if (Math.abs(votes.saja - votes.huntrix) >= splitThreshold) {
+    startParticles();
+  } else {
+    stopParticles();
+  }
+}
+
+// ─────────── Authenticate & Bootstrap ───────────
+signInAnonymously(auth)
+  .then(async () => {
+    // Initial fetch and UI render
+    votes = await fetchCounts();
+    updateMoon();
+
+    // Wire up vote buttons
+    sajaBtn.onclick = async () => {
+      await callVoteAPI('POST', { choice: 'saja' });
+      votes = await fetchCounts();
+      hasVoted = true;
+      updateMoon();
+    };
     huntrixBtn.onclick = async () => {
       await callVoteAPI('POST', { choice: 'huntrix' });
       votes = await fetchCounts();
+      hasVoted = true;
       updateMoon();
     };
     redactBtn.onclick = async () => {
       await callVoteAPI('DELETE');
       votes = await fetchCounts();
+      hasVoted = false;
       updateMoon();
     };
   })
   .catch(console.error);
+
 
 
