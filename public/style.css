@@ -191,7 +191,7 @@ body.loading .vote-counts {
 .retract-btn {
   position: relative;
   background: none;
-  color: #fff;
+  color: #000;
   border: none;
   border-radius: 2.4em;
   padding: 18px 34px;
