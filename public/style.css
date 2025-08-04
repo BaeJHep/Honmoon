@@ -8,33 +8,42 @@ body {
   padding-top: 24px;
 }
 
-/* ─────────── Splitmoon Container ─────────── */
-#splitmoon-container {
+#fanmoon {
   position: relative;
   width: 240px;
   height: 240px;
   margin: 0 auto 18px;
-  perspective: 900px;
+  overflow: visible;
+  border-radius: 50%;
+  background: #000;
+  box-shadow: inset 0 10px 30px rgba(0,0,0,0.7), 0 0 60px rgba(255,215,0,0.4);
 }
-
-/* ─────────── Splitmoon SVG Glow ─────────── */
+#splitmoon-container {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  perspective: 900px;
+  border-radius: 50%;
+  overflow: visible;
+}
 #splitmoon-svg {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
   margin: 0 auto;
   background: transparent;
   overflow: visible;
   z-index: 1;
   filter: drop-shadow(0 0 48px #ffb6eeb0) drop-shadow(0 0 24px #bbfff7a0);
+  max-width: 100%;
+  max-height: 100%;
 }
-
-/* ─────────── Huntrix Overlays ─────────── */
-.huntrix-overlay {
+.huntrix-overlay, .huntrix-glitter, .huntrix-highlight, .particles {
   position: absolute;
-  inset: 0;
-  border-radius: 50%;
+  top: 0; left: 0; width: 100%; height: 100%;
   pointer-events: none;
+  border-radius: 50%;
+}
+.huntrix-overlay {
   mix-blend-mode: lighten;
   opacity: 0.68;
   z-index: 2;
@@ -44,19 +53,7 @@ body {
     radial-gradient(circle at 60% 90%, #d6b6ff99 0%, transparent 70%);
   animation: swirlBlend 14s linear infinite;
 }
-@keyframes swirlBlend {
-  0% { transform: rotate(0deg) scale(1);}
-  50% { transform: rotate(7deg) scale(1.05);}
-  100% { transform: rotate(0deg) scale(1);}
-}
-
-/* ─────────── Glitter Dots ─────────── */
 .huntrix-glitter {
-  position: absolute;
-  inset: 0;
-  width: 100%; height: 100%;
-  border-radius: 50%;
-  pointer-events: none;
   z-index: 3;
   overflow: hidden;
 }
@@ -78,37 +75,28 @@ body {
   10%      { opacity: 1;   transform: scale(1.08);}
   90%      { opacity: 1;   transform: scale(1);}
 }
-
-/* ─────────── Glossy Highlight ─────────── */
 .huntrix-highlight {
-  position: absolute;
-  inset: 0;
-  width: 100%; height: 100%;
-  border-radius: 50%;
-  pointer-events: none;
   background: radial-gradient(circle at 58% 48%, #fff9 18%, transparent 65%);
   opacity: 0.17;
   z-index: 4;
 }
-
-/* ─────────── Rift Particles ─────────── */
 .particles {
-  position: absolute;
-  inset: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
   z-index: 20;
   transition: opacity 0.5s;
 }
 .particles span {
   position: absolute;
   border-radius: 50%;
-  pointer-events: none;
   opacity: 0.82;
   will-change: transform, opacity, filter;
   background: radial-gradient(circle at 60% 50%, #fffbe9 0%, #ff7dbe 70%, #e00047 100%);
   box-shadow: 0 0 4px 1px #ff0b4c33;
   width: 3px; height: 3px;
+}
+@keyframes swirlBlend {
+  0% { transform: rotate(0deg) scale(1);}
+  50% { transform: rotate(7deg) scale(1.05);}
+  100% { transform: rotate(0deg) scale(1);}
 }
 
 /* ─────────── Voting UI & Counts ─────────── */
