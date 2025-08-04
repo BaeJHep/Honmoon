@@ -106,20 +106,19 @@ function renderMoon() {
           <stop offset="0%" stop-color="#ff46c7"/>
           <stop offset="100%" stop-color="#e00047"/>
         </linearGradient>
-      </defs>
-      <circle cx="120" cy="120" r="120"
-              fill="url(#pinkGrad)"
-              clip-path="inset(0 120px 0 0)" />
-
-      <defs>
         <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stop-color="#b6fff7"/>
           <stop offset="100%" stop-color="#ffe5ec"/>
         </linearGradient>
+        <clipPath id="leftHalf">
+          <rect x="0" y="0" width="120" height="240" />
+        </clipPath>
+        <clipPath id="rightHalf">
+          <rect x="120" y="0" width="120" height="240" />
+        </clipPath>
       </defs>
-      <circle cx="120" cy="120" r="120"
-              fill="url(#blueGrad)"
-              clip-path="inset(0 0 0 120px)" />
+      <circle cx="120" cy="120" r="120" fill="url(#pinkGrad)" clip-path="url(#leftHalf)" />
+      <circle cx="120" cy="120" r="120" fill="url(#blueGrad)" clip-path="url(#rightHalf)" />
     </svg>
   `;
 }
