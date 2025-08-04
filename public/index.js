@@ -125,7 +125,7 @@ function updateMoon() {
   // renderMoon(votes);
 
   // 5) Split UI: show rift SVG & particles when threshold reached
-  if (Math.abs(votes.saja - votes.huntrix) >= splitThreshold) {
+  if (Math.abs(votes.saja - votes.huntrix) <= splitThreshold) {
     riftSvg.style.display        = 'block';
     huntrixOverlay.style.display = 'none';
     huntrixGlitter.style.display = 'none';
