@@ -150,7 +150,22 @@ body {
 .retract-btn {
   animation: glowPulse 2.5s ease-in-out infinite;
 }
+/* ─ Heartbeat Pulse Animation ─ */
+@keyframes heartbeat {
+  0%, 20%, 60%, 100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.1);
+  }
+  80% {
+    transform: scale(1.05);
+  }
+}
 
+#fanmoon.heartbeat {
+  animation: heartbeat 0.6s ease-out;
+}
 /* Shiny sweep effect */
 .retract-btn::before {
   content: '';
