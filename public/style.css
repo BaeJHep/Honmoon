@@ -26,6 +26,7 @@ body {
   overflow: visible;
 }
 #splitmoon-svg {
+
   width: 100%;
   height: 100%;
   display: block;
@@ -36,7 +37,33 @@ body {
   filter: drop-shadow(0 0 48px #ffb6eeb0) drop-shadow(0 0 24px #bbfff7a0);
   max-width: 100%;
   max-height: 100%;
+  transform: rotateX(5deg);
+  transform-style: preserve-3d;
 }
+}
+#splitmoon-container::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  /* subtle bright spot */
+  background: radial-gradient(circle at 30% 30%,
+    rgba(255,255,255,0.25) 0%, transparent 60%);
+  pointer-events:none;
+  z-index:5;
+}
+#splitmoon-container::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  /* darken the outside edges */
+  background: radial-gradient(circle,
+    transparent 60%, rgba(0,0,0,0.4) 100%);
+  pointer-events:none;
+  z-index:7;
+}
+
 .rift-svg {
   position: absolute;
   top: 0; left: 0;
