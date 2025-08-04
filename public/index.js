@@ -97,6 +97,33 @@ function stopParticles() {
   particlesDiv.innerHTML = '';
 }
 
+// ─────────── Moon SVG Renderer ───────────
+function renderMoon() {
+  return `
+    <svg id="splitmoon-svg" viewBox="0 0 240 240">
+      <defs>
+        <linearGradient id="pinkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#ff46c7"/>
+          <stop offset="100%" stop-color="#e00047"/>
+        </linearGradient>
+      </defs>
+      <circle cx="120" cy="120" r="120"
+              fill="url(#pinkGrad)"
+              clip-path="inset(0 120px 0 0)" />
+
+      <defs>
+        <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#b6fff7"/>
+          <stop offset="100%" stop-color="#ffe5ec"/>
+        </linearGradient>
+      </defs>
+      <circle cx="120" cy="120" r="120"
+              fill="url(#blueGrad)"
+              clip-path="inset(0 0 0 120px)" />
+    </svg>
+  `;
+}
+
 // ─────────── UI Rendering ───────────
 function createHuntrixOverlays() {
   return `
@@ -120,11 +147,7 @@ function updateMoon() {
   fanmoonDiv.classList.toggle('huntrix-win', votes.huntrix > votes.saja);
   fanmoonDiv.classList.toggle('saja-win',    votes.saja > votes.huntrix);
 
-  // 4) (Optional) dynamic moon render
-  // if you have a renderMoon() from CodePen, call it here:
-  // renderMoon(votes);
-
-  // 5) Split UI: show rift SVG & particles when threshold reached
+  // 4) Split UI: show rift & particles when close
   if (Math.abs(votes.saja - votes.huntrix) <= splitThreshold) {
     riftSvg.style.display        = 'block';
     huntrixOverlay.style.display = 'none';
@@ -143,6 +166,9 @@ function updateMoon() {
 // ─────────── Authenticate & Bootstrap ───────────
 signInAnonymously(auth)
   .then(async () => {
+    // Draw the two-tone moon
+    splitContainer.innerHTML = renderMoon();
+
     // Initial load: fetch counts & render
     votes = await fetchCounts();
     updateMoon();
@@ -170,6 +196,3 @@ signInAnonymously(auth)
     };
   })
   .catch(console.error);
-
-
-
