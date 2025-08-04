@@ -8,79 +8,45 @@ body {
   padding-top: 24px;
 }
 
-/* ─────────── Fanmoon & Split‐Moon Container ─────────── */
-#fanmoon,
-#splitmoon-container {
+/* ─────────── FanMoon Wrapper ─────────── */
+#fanmoon {
   position: relative;
   width: 240px;
   height: 240px;
   margin: 0 auto 18px;
-  overflow: hidden;
   border-radius: 50%;
-}
-
-#fanmoon {
+  overflow: hidden;
   background: #000;
+  /* Outer golden halo */
   box-shadow:
     inset 0 10px 30px rgba(0,0,0,0.7),
     0 0 60px rgba(255,215,0,0.4);
-  position: relative;
-}
-#fanmoon::before {
-  content: '';
-  position: absolute;
-  top: -20px; left: -20px;
-  right: -20px; bottom: -20px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,215,0,0.25) 0%, transparent 70%);
-  filter: blur(40px);
-  pointer-events: none;
-  z-index: 0;
 }
 
+/* ─────────── Split‐Moon Container ─────────── */
 #splitmoon-container {
+  position: absolute;
+  inset: 0;
   perspective: 900px;
   transform-origin: center;
+  border-radius: 50%;
+  overflow: hidden;
 }
 
-/* ─────────── Moon Glow & Inner Shadow ─────────── */
-#splitmoon-container::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(circle at center, rgba(255,255,255,0.08) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 1;
-}
-* ─── Subtle White Wash for Depth ─── */
-#splitmoon-container::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 50% 45%,
-    rgba(255, 255, 255, 0.12) 0%,
-    transparent 70%
-  );
-  pointer-events: none;
-  z-index: 0; /* behind the SVG, above the black background */
-}
-/* ─── Two-Tone Moon Halo & Inner Shadow ─── */
-#splitmoon-svg,
-#splitmoon-container svg {
+/* ─────────── Two-Tone Moon + Magical Glow ─────────── */
+#splitmoon-svg {
   width: 100%;
   height: auto;
   display: block;
   margin: 0 auto;
-  overflow: visible;
-  /* INNER dark vignette + OUTER golden glow */
+  border-radius: 50%;
+  /* Inner dark vignette + Outer golden glow */
   filter:
-    inset 0 10px 30px rgba(0, 0, 0, 0.7),
-    0 0 60px rgba(255, 215, 0, 0.4);
+    inset 0 20px 40px rgba(0,0,0,0.6),
+    0 0 80px rgba(255,215,0,0.5);
   z-index: 1; /* behind overlays/rift */
 }
+
 /* ─────────── Rift Crack Lines ─────────── */
 .rift-svg {
   position: absolute;
@@ -90,7 +56,7 @@ body {
   z-index: 5;
 }
 
-/* ─────────── Huntrix Overlays ─────────── */
+/* ─────────── Huntr/x Overlays ─────────── */
 .huntrix-overlay {
   position: absolute;
   inset: 0;
@@ -106,8 +72,8 @@ body {
   animation: swirlBlend 14s linear infinite;
 }
 @keyframes swirlBlend {
-  0% { transform: rotate(0deg) scale(1); }
-  50% { transform: rotate(7deg) scale(1.05); }
+  0%   { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(7deg) scale(1.05); }
   100% { transform: rotate(0deg) scale(1); }
 }
 
@@ -122,8 +88,7 @@ body {
 }
 .huntrix-glitter span {
   position: absolute;
-  width: 7px;
-  height: 7px;
+  width: 7px; height: 7px;
   border-radius: 50%;
   background: rgba(255,255,255,0.8);
   box-shadow: 0 0 8px 4px #fff7, 0 0 12px 8px #e2c4ff44;
@@ -131,8 +96,8 @@ body {
 }
 @keyframes sparkle {
   0%,100% { opacity: 0; transform: scale(0.7); }
-  10% { opacity: 1; transform: scale(1.08); }
-  90% { opacity: 1; transform: scale(1); }
+  10%      { opacity: 1; transform: scale(1.08); }
+  90%      { opacity: 1; transform: scale(1); }
 }
 
 /* ─────────── Glossy Highlight ─────────── */
@@ -161,12 +126,11 @@ body {
   will-change: transform, opacity, filter;
   background: radial-gradient(circle at 60% 50%, #fffbe9 0%, #ff7dbe 70%, #e00047 100%);
   box-shadow: 0 0 4px 1px #ff0b4c33;
-  width: 3px;
-  height: 3px;
+  width: 3px; height: 3px;
   animation: slideUp 1.9s cubic-bezier(0.46,0.03,0.52,0.96) forwards;
 }
 @keyframes slideUp {
-  0% { opacity: 0; transform: translateY(40px); }
+  0%   { opacity: 0; transform: translateY(40px); }
   100% { opacity: 1; transform: translateY(0); }
 }
 
@@ -210,6 +174,6 @@ body {
   gap: 32px;
   font-weight: 600;
 }
-.count-label.saja { color: #ff46c7; }
+.count-label.saja    { color: #ff46c7; }
 .count-label.huntrix { color: #3dd8ff; }
 
