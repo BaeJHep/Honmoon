@@ -167,13 +167,20 @@ function triggerHeartbeat() {
 // ─────────── Authenticate & Bootstrap ───────────
 signInAnonymously(auth)
   .then(async () => {
-    // Grab overlays & particles after DOM exists
     grabOverlayElements();
 
-    // Initial load: fetch counts & render
     votes = await fetchCounts();
     updateMoon();
 
+    // now that we're fully ready, reveal the rest:
+    document.body.classList.remove('loading');
+
+    // bind your vote / retract handlers…
+    sajaBtn.onclick = async () => { … triggerHeartbeat(); };
+    huntrixBtn.onclick = async () => { … triggerHeartbeat(); };
+    redactBtn.onclick = async () => { … };
+  })
+  .catch(console.error);
     // Bind vote handlers
     sajaBtn.onclick = async () => {
       await callVoteAPI('POST', { choice: 'saja' });
