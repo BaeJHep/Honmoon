@@ -50,6 +50,89 @@ body {
   overflow: visible;
   z-index: 0;
   /* inner vignette + golden halo glow */
+  filter: inset 0 10px 30px rgba(0,0,0,0.7), 0 0 60px rgba(255,215,0,0.4);
+}
+
+/* ─────────── Rift Crack Lines ─────────── */
+.rift-svg {
+  position: absolute;
+  inset: 0;
+  display: none;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ─────────── Huntrix Overlays ─────────── */
+.huntrix-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  mix-blend-mode: lighten;
+  opacity: 0.68;
+  z-index: 2;
+  background:
+    radial-gradient(circle at 20% 30%, #ffb6eec9 0%, transparent 60%),
+    radial-gradient(circle at 80% 50%, #b6fff7b0 0%, transparent 70%),
+    radial-gradient(circle at 60% 90%, #d6b6ff99 0%, transparent 70%);
+  animation: swirlBlend 14s linear infinite;
+}
+@keyframes swirlBlend {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(7deg) scale(1.05); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+/* ─────────── Glitter Dots ─────────── */
+.huntrix-glitter {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 3;
+  overflow: hidden;
+}
+.huntrix-glitter span {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 8px 4px #fff7, 0 0 12px 8px #e2c4ff44;
+  animation: sparkle 2.5s linear infinite;
+}
+@keyframes sparkle {
+  0%,100% { opacity: 0; transform: scale(0.7); }
+  10% { opacity: 1; transform: scale(1.08); }
+  90% { opacity: 1; transform: scale(1); }
+}
+
+/* ─────────── Glossy Highlight ─────────── */
+.huntrix-highlight {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle at 58% 48%, #fff9 18%, transparent 65%);
+  opacity: 0.17;
+  z-index: 4;
+}
+
+/* ─────────── Rift Particles ─────────── */
+.particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+  transition: opacity 0.5s;
+}
+.particles span {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.82;
+  will-change: transform, opacity, filter;
+  background: radial-gradient(circle at 60% 50%, #fffbe9 0%, #ff7dbe 70%, #e00047 100%);
+  box-shadow: 0 0 4px 1px #ff0b4c33;
   width: 3px;
   height: 3px;
   animation: slideUp 1.9s cubic-bezier(0.46,0.03,0.52,0.96) forwards;
