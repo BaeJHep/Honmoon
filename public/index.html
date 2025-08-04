@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The FanMoon</title>
-  <!-- External CSS -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -12,34 +11,10 @@
 
   <!-- FANMOON WRAPPER: for DB integration and visual updates -->
   <div id="fanmoon" class="huntrix-win">
-  <!-- Split‐moon container for dynamic SVG and overlays -->
-<div id="splitmoon-container">
-  <svg id="splitmoon-svg" viewBox="0 0 240 240">
-    <!-- pink left half -->
-    <defs>
-      <linearGradient id="pinkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stop-color="#ff46c7"/>
-        <stop offset="100%" stop-color="#e00047"/>
-      </linearGradient>
-    </defs>
-    <circle cx="120" cy="120" r="120"
-            fill="url(#pinkGrad)"
-            clip-path="inset(0 120px 0 0)" />
+    <!-- Split‐moon container: SVG is injected here by index.js -->
+    <div id="splitmoon-container"></div>
 
-    <!-- blue right half -->
-    <defs>
-      <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" stop-color="#b6fff7"/>
-        <stop offset="100%" stop-color="#ffe5ec"/>
-      </linearGradient>
-    </defs>
-    <circle cx="120" cy="120" r="120"
-            fill="url(#blueGrad)"
-            clip-path="inset(0 0 0 120px)" />
-  </svg>
-</div>
-
-    <!-- Rift overlay for split state (hidden by default via CSS) -->
+    <!-- Rift overlay for split state (hidden by default) -->
     <svg class="rift-svg" viewBox="0 0 240 240">
       <polygon id="riftV" points="110,0 130,0 120,230" fill="#111" />
     </svg>
@@ -57,7 +32,7 @@
 
   <!-- VOTE BUTTONS -->
   <div class="vote-ui">
-    <button id="vote-saja"    class="vote-btn saja">Vote Saja Boys</button>
+    <button id="vote-saja" class="vote-btn saja">Vote Saja Boys</button>
     <button id="vote-huntrix" class="vote-btn huntrix">Vote Huntr/x</button>
   </div>
 
@@ -70,8 +45,12 @@
 
   <!-- COUNTERS -->
   <div class="vote-counts">
-    <div class="count-label saja">Saja Boys: <span id="saja-count">0</span></div>
-    <div class="count-label huntrix">Huntr/x:   <span id="huntrix-count">0</span></div>
+    <div class="count-label saja">
+      Saja Boys: <span id="saja-count">0</span>
+    </div>
+    <div class="count-label huntrix">
+      Huntr/x: <span id="huntrix-count">0</span>
+    </div>
   </div>
 
   <!-- Firebase + vote logic -->
