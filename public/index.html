@@ -1,22 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The FanMoon</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <h1>The FanMoon</h1>
-
-  <!-- FANMOON WRAPPER: for DB integration and visual updates -->
- <div id="fanmoon" class="huntrix-win">
-  <div id="splitmoon-container"></div>
-  <svg class="rift-svg" …></svg>
-  <!-- overlays… -->
+    <!-- blue right half -->
+    <defs>
+      <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#b6fff7"/>
+        <stop offset="100%" stop-color="#ffe5ec"/>
+      </linearGradient>
+    </defs>
+    <circle cx="120" cy="120" r="120"
+            fill="url(#blueGrad)"
+            clip-path="inset(0 0 0 120px)" />
+  </svg>
 </div>
 
-    <!-- Rift overlay for split state (hidden by default) -->
+    <!-- Rift overlay for split state (hidden by default via CSS) -->
     <svg class="rift-svg" viewBox="0 0 240 240">
       <polygon id="riftV" points="110,0 130,0 120,230" fill="#111" />
     </svg>
@@ -34,7 +29,7 @@
 
   <!-- VOTE BUTTONS -->
   <div class="vote-ui">
-    <button id="vote-saja" class="vote-btn saja">Vote Saja Boys</button>
+    <button id="vote-saja"    class="vote-btn saja">Vote Saja Boys</button>
     <button id="vote-huntrix" class="vote-btn huntrix">Vote Huntr/x</button>
   </div>
 
@@ -47,12 +42,8 @@
 
   <!-- COUNTERS -->
   <div class="vote-counts">
-    <div class="count-label saja">
-      Saja Boys: <span id="saja-count">0</span>
-    </div>
-    <div class="count-label huntrix">
-      Huntr/x: <span id="huntrix-count">0</span>
-    </div>
+    <div class="count-label saja">Saja Boys: <span id="saja-count">0</span></div>
+    <div class="count-label huntrix">Huntr/x:   <span id="huntrix-count">0</span></div>
   </div>
 
   <!-- Firebase + vote logic -->
