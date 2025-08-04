@@ -39,11 +39,14 @@ async function fetchCounts() {
 // ─────────── DOM References & State ───────────
 const fanmoonDiv      = document.getElementById('fanmoon');
 const splitContainer  = document.getElementById('splitmoon-container');
-const particlesDiv    = fanmoonDiv.querySelector('.particles');
-const riftSvg         = fanmoonDiv.querySelector('.rift-svg');
-const huntrixOverlay  = fanmoonDiv.querySelector('.huntrix-overlay');
-const huntrixGlitter  = fanmoonDiv.querySelector('.huntrix-glitter');
-const huntrixHighlight= fanmoonDiv.querySelector('.huntrix-highlight');
+let particlesDiv, riftSvg, huntrixOverlay, huntrixGlitter, huntrixHighlight;
+function grabOverlayElements() {
+  particlesDiv     = splitContainer.querySelector('.particles');
+  huntrixOverlay   = splitContainer.querySelector('.huntrix-overlay');
+  huntrixGlitter   = splitContainer.querySelector('.huntrix-glitter');
+  huntrixHighlight = splitContainer.querySelector('.huntrix-highlight');
+  riftSvg          = fanmoonDiv.querySelector('.rift-svg');
+}
 
 const sajaCountEl     = document.getElementById('saja-count');
 const huntrixCountEl  = document.getElementById('huntrix-count');
