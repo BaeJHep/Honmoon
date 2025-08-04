@@ -200,10 +200,8 @@ body.loading .vote-counts {
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(224,0,71,0.5);
   transition: transform 0.2s, box-shadow 0.2s;
-  z-index: 1;
   animation: glowPulse 2.5s ease-in-out infinite;
 }
-
 .retract-btn::before {
   content: '';
   position: absolute;
@@ -211,20 +209,20 @@ body.loading .vote-counts {
   left: 0;
   width: 100%;
   height: 100%;
-  transform-origin: center center;
+  border-radius: inherit;
   background: conic-gradient(
+    from 0deg at 50% 50%,
     #ff46c7 0%, #e00047 25%, #b6fff7 50%, #e2c4ff 75%, #ffe5ec 100%
   );
   animation: swirlConic 4s linear infinite;
-  z-index: 0;
-}
-
-@keyframes swirlConic {
-  to { transform: rotate(360deg); }
+  z-index: -1;
 }
 
 /* Pulsing glow */
 @keyframes glowPulse {
+  0%,100% { box-shadow: 0 4px 12px rgba(224,0,71,0.5); }
+  50%     { box-shadow: 0 6px 20px rgba(224,0,71,0.7); }
+} {
   0%,100% { box-shadow: 0 4px 12px rgba(224,0,71,0.5); }
   50%     { box-shadow: 0 6px 20px rgba(224,0,71,0.7); }
 }
@@ -269,3 +267,4 @@ body.loading .vote-counts {
 }
 .count-label.saja { color: #ff46c7; }
 .count-label.huntrix { color: #3dd8ff; }
+
